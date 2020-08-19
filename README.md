@@ -1,11 +1,4 @@
-# Reddit subreddits celebrities, r/goddesses, r/models. Let's get entities
-# Reddit subreddits for male models
-
-# Features
-- Vote between two entities (shareable link)
-- Leaderboard showing elo rating 
-- Frontend has a show/hide nsfw switch
-- Tourney style (users can add links to gifs, images, or upload images)
+Making something
 
 # Database
 - Entity

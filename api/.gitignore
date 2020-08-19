@@ -1,0 +1,10 @@
+/htmlcov
+/__pycache__
+/meetup/__pycache__
+/.pytest_cache
+db.sqlite3
+**/__pycache__/*
+**/__pycache__/
+dump.rdb
+.coverage
+*.rdb

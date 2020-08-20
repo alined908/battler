@@ -11,7 +11,7 @@ export interface Game {
     tournament: string,
     bracket_size: number,
     curr_round: number,
-    winner: string | null,
+    winner: TournamentEntry | null,
     battles: Battle[],
     curr_battle: number,
     created_at: string,

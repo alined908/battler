@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from django.shortcuts import get_object_or_404
+from django.views.decorators.cache import cache_page 
+from django.utils.decorators import method_decorator
 
 class TournamentListView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -32,6 +34,7 @@ class TournamentView(APIView):
         tournament = get_object_or_404(Tournament, pk=hash)
         return tournament
 
+    @method_decorator(cache_page(60 * 5))
     def get(self, request, *args, **kwargs) -> Response:
         tournament = self.get_tournament(kwargs['id'])
         serializer = TournamentSerializer(tournament)
@@ -71,10 +74,9 @@ class GameView(APIView):
             return Response("No session available", status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            game = Game.objects.get(session_id=request.session.session_key, tournament_id=kwargs['id'])
+            game = Game.objects.get(session_id=request.session.session_key, tournament_id=kwargs['id'], is_gameend=False)
             serializer = GameSerializer(game)
-            response = Response(serializer.data, status=status.HTTP_200_OK)
-            return response
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except Game.DoesNotExist:
             return Response("Game does not exist", status=status.HTTP_400_BAD_REQUEST)
 
@@ -86,7 +88,7 @@ class GameView(APIView):
         # Set session_id for this game
         if not request.session.exists(request.session.session_key):
             request.session.create()
-
+        
 
         game = Game.objects.create(bracket_size=int(request.data['bracket_size']), session_id=request.session.session_key, tournament_id=kwargs['id'])
         serializer = GameSerializer(game)
@@ -94,7 +96,16 @@ class GameView(APIView):
         response.set_cookie('sessionid', request.session.session_key, httponly=True)
         return response
 
-        # return Response({"error": "Something bad happened."}, status=status.HTTP_400_BAD_REQUEST)
+    def patch(self, request, *args, **kwargs) -> Response:
+        """
+        Request - end_game
+        Response - Send 
+        """
+        game = Game.objects.get(session_id=request.session.session_key, tournament_id=kwargs['id'], is_gameend=False)
+        game.is_gameend = True
+        game.save()
+
+        return Response("Ended game successfully.", status=status.HTTP_200_OK)
 
 class BattleView(APIView):
 

@@ -38,6 +38,7 @@ class Game(Timestamps):
     curr_round = models.IntegerField(choices=BracketTypes.choices())
     winner = models.ForeignKey(TournamentEntry, on_delete=models.SET_NULL, null=True, blank=True)
     curr_battle = models.IntegerField(default=0)
+    is_gameend = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.pk:

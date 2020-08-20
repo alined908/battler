@@ -34,7 +34,7 @@ class TournamentView(APIView):
         tournament = get_object_or_404(Tournament, pk=hash)
         return tournament
 
-    @method_decorator(cache_page(60 * 5))
+    # @method_decorator(cache_page(60 * 5))
     def get(self, request, *args, **kwargs) -> Response:
         tournament = self.get_tournament(kwargs['id'])
         serializer = TournamentSerializer(tournament)
@@ -64,6 +64,33 @@ class TournamentEntryListView(APIView):
             return Response(entry_serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(entry_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs) -> Response:
+
+        entry_id = kwargs
+
+class TournamentEntryView(APIView):
+
+    permission_classes = [permissions.AllowAny]
+
+    def get_entry(self, id):
+        entry = get_object_or_404(TournamentEntry, id=id)
+        return entry
+
+    def patch(self, request, *args, **kwargs) -> Response:
+        entry = self.get_entry(kwargs['entry_id'])
+        entry.title = request.data['title']
+        entry.save()
+        
+        serializer = TournamentEntrySerializer(entry)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs) -> Response:
+
+        entry = self.get_entry(kwargs['entry_id'])
+        entry.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class GameView(APIView):
 

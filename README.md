@@ -22,16 +22,16 @@ Making something
     
 Todo
 -------
-- [] Search Tournaments
+- [x] Search Tournaments
+- [] Tournament Entry (List View, Multiple, Drag and Drop)
 - [] Tag Tournaments
 - [] List past games
 - [] Bracketize
 
 - [] Twitch Chatbot
-- [] Comments
+- [] Battle Design/Transition
 - [] User accounts
 
 - [] Create Home Page
-- [] Frontend (Design, Transitions)
 
 - [] Deploy

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Game as GameType, Battle as BattleType, Tournament as TournamentType, TournamentEntry as TournamentEntryType} from '../../interfaces'
+import {Battle as BattleType, TournamentEntry as TournamentEntryType} from '../../interfaces'
 import {axiosClient} from '../../tools/axiosClient'
 import {BattleEntry} from '../components'
 

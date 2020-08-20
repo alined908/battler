@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
-import {Game as GameType, Battle as BattleType, Tournament as TournamentType} from '../../interfaces'
+import {Game as GameType, Tournament as TournamentType} from '../../interfaces'
 import {BattleEntry} from '../components'
-import {withRouter, RouteComponentProps, Link} from 'react-router-dom'
+import {withRouter, RouteComponentProps} from 'react-router-dom'
 import {axiosClient} from '../../tools/axiosClient'
 
 type TParams = {

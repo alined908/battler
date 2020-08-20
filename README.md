@@ -20,3 +20,18 @@ Making something
     - Entity 1 
     - Entity 2
     
+Todo
+-------
+- [] Search Tournaments
+- [] Tag Tournaments
+- [] List past games
+- [] Bracketize
+
+- [] Twitch Chatbot
+- [] Comments
+- [] User accounts
+
+- [] Create Home Page
+- [] Frontend (Design, Transitions)
+
+- [] Deploy

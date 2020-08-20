@@ -5,6 +5,7 @@ from .utils import Timestamps, generate_random_hash
 from django.contrib.sessions.models import Session
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.postgres.search import SearchVector
 import uuid
 import random
 
@@ -13,6 +14,14 @@ def tournament_photo_directory(instance, filename):
 
 def tournament_avatar_directory(instance, filename):
     return f'uploads/tournaments/{instance.tournament.id}/avatar'
+
+class TournamentManager(models.Manager):
+
+    def search(self, query):
+        tournaments = self.annotate(
+            search=SearchVector('title', 'description')
+        ).filter(search__icontains=query)
+        return tournaments
 
 class Tournament(Timestamps):
     id = models.SlugField(primary_key=True, default=generate_random_hash, editable=True, unique=True)
@@ -23,6 +32,8 @@ class Tournament(Timestamps):
     password = models.CharField(max_length=32, null=True, blank=True)
     privacy = models.IntegerField(choices=TournamentPrivacy.choices(), default=TournamentPrivacy.PUBLIC)
     is_nsfw = models.BooleanField()
+
+    objects = TournamentManager()
 
 class TournamentEntry(Timestamps):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

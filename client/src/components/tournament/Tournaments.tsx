@@ -31,7 +31,7 @@ class Tournaments extends Component<TournamentsProps, TournamentsState> {
 
     render() {
         return (
-            <div className="container mx-auto py-8 px-4">
+            <div className="py-8 px-4">
                 {this.state.tournaments.map((tournament) => 
                     <TournamentCard
                         key={tournament.id}

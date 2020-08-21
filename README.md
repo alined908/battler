@@ -23,7 +23,7 @@ Making something
 Todo
 -------
 - [x] Search Tournaments
-- [] Tournament Entry (List View, Multiple, Drag and Drop)
+- [x] Tournament Entry (Multiple, Drag and Drop)
 - [] Tag Tournaments
 - [] List past games
 - [] Bracketize

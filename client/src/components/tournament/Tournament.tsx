@@ -59,10 +59,10 @@ class Tournament extends Component<TournamentProps, TournamentState> {
                 <CircularProgress/>
             </div>
             :
-            <div className="flex justify-center flex-col py-10 px-5 h-full bg-gray-100 max-w-screen-lg mx-auto">
-                <div className="container rounded bg-white mx-auto">
+            <div className="flex justify-center flex-col py-10 px-5 h-full bg-gray-100 max-w-screen-lg mx-auto w-full" >
+                <div className="container rounded mx-auto">
                     {/* <img className="w-full" src="/img/card-top.jpg" alt="Sunset in the mountains"/> */}
-                    <div className="px-6 py-4">
+                    <div className="py-4">
                         <div className="mb-2 flex justify-between">
                             <span className="text-2xl font-bold ">
                                 {this.state.tournament.title}
@@ -76,13 +76,13 @@ class Tournament extends Component<TournamentProps, TournamentState> {
                         </p>
                         
                     </div>
-                    <div className="px-4 py-4">
+                    <div className="py-4">
                         <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">#Tag1</span>
                         <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">#Tag2</span>
                         <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">#Tag3</span>
                     </div>
                 </div>
-                
+                <hr className="my-6"/>
                 <TournamentEntries
                     tournament={this.state.tournament}
                 />

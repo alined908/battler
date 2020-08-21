@@ -57,7 +57,18 @@ class TournamentEntryListView(APIView):
 
     def post(self, request, *args, **kwargs) -> Response:
         
-        entry_serializer = TournamentEntrySerializer(data=request.data)
+        entries = []
+
+        for entry in request.data.getlist('files'):
+            entry_obj = {
+                'tournament': kwargs['id'],
+                'title': entry.name,
+                'photo': entry
+            }
+
+            entries.append(entry_obj)
+ 
+        entry_serializer = TournamentEntrySerializer(data=entries, many=True)
 
         if entry_serializer.is_valid():
             entry_serializer.save()

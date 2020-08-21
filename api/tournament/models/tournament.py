@@ -3,7 +3,7 @@ from .user import User
 from .enums import BracketTypes, BattleSize, TournamentPrivacy
 from .utils import Timestamps, generate_random_hash
 from django.contrib.sessions.models import Session
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.postgres.search import SearchVector
 import uuid
@@ -127,3 +127,7 @@ def assign_entities(sender, instance, created, **kwargs):
         start_round = Round.objects.create(game=instance, round_num=instance.bracket_size)
         start_round.entries.set(selected_entries)
         start_round.generate_battles()
+
+@receiver(post_delete, sender=TournamentEntry)
+def remove_file_from_s3(sender, instance, **kwargs):
+    instance.photo.delete()

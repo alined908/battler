@@ -6,6 +6,7 @@ from django.contrib.sessions.models import Session
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.postgres.search import SearchVector
+from taggit.managers import TaggableManager
 import uuid
 import random
 
@@ -32,7 +33,8 @@ class Tournament(Timestamps):
     password = models.CharField(max_length=32, null=True, blank=True)
     privacy = models.IntegerField(choices=TournamentPrivacy.choices(), default=TournamentPrivacy.PUBLIC)
     is_nsfw = models.BooleanField()
-
+    tags = TaggableManager()
+    
     objects = TournamentManager()
 
 class TournamentEntry(Timestamps):

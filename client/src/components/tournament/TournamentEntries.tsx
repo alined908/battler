@@ -9,12 +9,6 @@ enum EntriesDisplay {
     Grid
 }
 
-type imageObject = {
-    tournament?: string,
-    photo?: File
-    title?: string
-}
-
 interface TournamentEntriesProps {
     tournament: TournamentType
 }
@@ -31,7 +25,7 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
     state : TournamentEntriesState = {
         tournament: this.props.tournament,
         showUpload: false,
-        display: EntriesDisplay.Grid,
+        display: EntriesDisplay.List,
         files: []
     }
 
@@ -42,7 +36,7 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
             const image = this.state.files[i]
             data.append('files', image, image.name)
         }
-        console.log(data)
+       
         axiosClient.request({
             url: `api/tournaments/${this.props.tournament.id}/entry/`,
             method: 'POST',
@@ -134,7 +128,11 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
                                 <span className="font-semibold">List</span>
                             </button>
                         </div>
-                        <button onClick={this.toggleUpload} className="bg-white hover:bg-gray-100 text-gray-800 border border-gray-400 font-semibold py-2 px-5 shadow rounded">
+                        <button onClick={this.toggleUpload} className="flex items-center bg-white hover:bg-gray-100 text-gray-800 text-sm font-semibold py-2 px-3 shadow rounded">
+                            <svg fill="#000" height="18" className="mr-1" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+                            </svg>
                             Upload
                         </button>
                     </div>
@@ -150,12 +148,10 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
                                             <div className="h-full overflow-auto w-full h-full flex flex-col">
                                                 <div className="border-dashed border-2 border-gray-400 py-12 flex flex-col justify-center items-center">
                                                     <p className="mb-3 font-semibold text-gray-900 flex flex-wrap justify-center">
-                                                        <span>Drag and drop</span>&nbsp;<span>images anywhere or</span>
+                                                        <span>Drag and drop</span>&nbsp;<span>images or click to upload.</span>
                                                     </p>
+                                                    <img className="mx-auto w-32" src="https://user-images.githubusercontent.com/507615/54591670-ac0a0180-4a65-11e9-846c-e55ffce0fe7b.png" alt="no data" />
                                                     <input {...getInputProps()}/>
-                                                    <button id="button" onClick={this.promptUpload} className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow-sm">
-                                                        Upload
-                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -173,14 +169,37 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
                     </div>
                 } */}
                 <div className={this.state.display === EntriesDisplay.Grid ? "grid w-full xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3": " w-full my-4"}>
-                    {this.state.tournament.entries.map((entry) => 
-                        <TournamentEntry
-                            display={this.state.display}
-                            entry={entry}
-                            handleDelete={() => this.deleteEntry(entry)}
-                            handleEdit={this.editEntry}
-                        />
-                    )}
+                    {this.state.display === EntriesDisplay.Grid ?
+                        this.state.tournament.entries.map((entry) => 
+                            <TournamentEntry
+                                display={this.state.display}
+                                entry={entry}
+                                handleDelete={() => this.deleteEntry(entry)}
+                                handleEdit={this.editEntry}
+                            />
+                        )
+                    :
+                    <div className="px-3 py-4 flex justify-center">
+                        <table className="w-full text-md bg-white shadow-md rounded mb-4">
+                            <tbody>
+                                <tr className="border-b">
+                                    <th className="text-left py-4 px-5">Media</th>
+                                    <th className="text-left py-4 px-5">Name</th>
+                                    <th className="text-left py-4 px-5">Date</th>
+                                    <th className="text-left py-4 px-5">Actions</th>
+                                </tr>
+                                {this.state.tournament.entries.map((entry) => 
+                                    <TournamentEntry
+                                        display={this.state.display}
+                                        entry={entry}
+                                        handleDelete={() => this.deleteEntry(entry)}
+                                        handleEdit={this.editEntry}
+                                    />
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                    }
                 </div>
             </div>
         )

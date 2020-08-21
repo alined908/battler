@@ -8,7 +8,7 @@ class Navbar extends Component {
         <div className="h-auto border-b shadow-sm bg-white w-full text-gray-700 bg-white">
             <div className="flex max-w-screen-xl px-4 mx-auto md:items-center md:justify-between md:flex-row md:px-6 lg:px-8">
                 <div className="flex flex-row items-center justify-between p-4">
-                    <Link to="/" className="text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">
+                    <Link to="/" className="text-xl font-bold text-gray-900 rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">
                         Rater
                     </Link>
                     <button className="rounded-lg md:hidden focus:outline-none focus:shadow-outline">

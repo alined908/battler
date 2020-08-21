@@ -76,10 +76,6 @@ class TournamentEntryListView(APIView):
         
         return Response(entry_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs) -> Response:
-
-        entry_id = kwargs
-
 class TournamentEntryView(APIView):
 
     permission_classes = [permissions.AllowAny]

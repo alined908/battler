@@ -44,45 +44,61 @@ class TournamentEntry extends Component<TournamentEntryProps> {
 
         const actions = this.state.isEditing ?
             <>
-                <div className="md:w-2/3">
-                    <input onChange={this.editField} className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" type="text" value={this.state.titleField}/>
-                </div>
-                <button onClick={this.toggleEdit} className="bg-red-600 hover:bg-red-700 text-sm text-white font-semibold py-2 px-4 shadow rounded">
-                    Close
-                </button>
-                <button onClick={this.onSubmit} className="bg-blue-600 hover:bg-blue-700 text-sm text-white font-semibold py-2 px-4 shadow rounded">
+                <button onClick={this.onSubmit} className="bg-white hover:bg-gray-100 text-xs text-blue-500 border font-semibold py-2 px-3 rounded mr-2">
                     Submit
+                </button>
+                <button onClick={this.toggleEdit} className="bg-white hover:bg-gray-100 text-xs text-red-500 border font-semibold py-2 px-3 rounded">
+                    Close
                 </button>
             </>
             :
-            <>
-                {entry.title}
-                
-                <button onClick={this.props.handleDelete} className="bg-red-600 hover:bg-red-700 text-sm text-white font-semibold py-2 px-4 shadow rounded mx-2">
+            <>       
+                <button onClick={this.toggleEdit} className="bg-white hover:bg-gray-100 text-xs text-blue-500 border font-semibold py-2 px-3 rounded mr-2">
+                    Edit
+                </button>         
+                <button onClick={this.props.handleDelete} className="bg-white hover:bg-gray-100 text-xs text-red-500 border font-semibold py-2 px-3 rounded">
                     Delete
                 </button>
-                <button onClick={this.toggleEdit} className="bg-blue-600 hover:bg-blue-700 text-sm text-white font-semibold py-2 px-4 shadow rounded mx-2">
-                    Edit
-                </button>
             </>
+
+        const titleInput = this.state.isEditing ? 
+            <input onChange={this.editField} className="bg-white appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" type="text" value={this.state.titleField}/>
+            :
+            entry.title
 
         return (
             this.props.display === EntriesDisplay.Grid ?
             <div className="shadow-md m-6" style={{minWidth: '14rem', minHeight: '14rem'}}>
                 <div className='rounded overflow-hidden'>
                     <img className="w-full object-cover h-56" src={entry.photo} alt={entry.title}/>
-                    <div className="px-3 py-4 overflow-hidden bg-white text-sm">
-                        {actions}
+                    <div className="flex items-center justify-between px-3 py-3 overflow-hidden bg-white text-sm font-semibold">
+                        {titleInput}
+                        <div className='flex items-center'>
+                            {actions}
+                        </div>
+                        
                     </div>
                 </div>
             </div>
             :
-            <div className='flex shadow-md mx-auto max-w-screen-md my-4 bg-white rounded overflow-hidden' >
-                <img className="w-24 object-cover h-24" src={entry.photo} alt={entry.title}/>
-                <div className='w-full flex items-center'>
+            <tr className="border-b hover:bg-orange-100">
+                <td className="p-3 px-4">
+                    <div className="rounded overflow-hidden shadow-md w-24 h-24">
+                        <img src={entry.photo} className="w-24 object-cover h-24"/>
+                    </div>
+                    
+                </td>
+                <td className="p-3 px-4 text-sm font-semibold">
+                    {titleInput}
+                </td>
+                <td className="p-3 px-4 text-sm">
+                    {entry.created_at}
+                </td>
+                
+                <td className="p-3 px-4">
                     {actions}
-                </div>
-            </div>
+                </td>
+            </tr>
         )
     }
 }

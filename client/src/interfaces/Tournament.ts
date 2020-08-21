@@ -4,7 +4,9 @@ export interface TournamentEntry {
     id: number,
     tournament: string,
     title: string,
-    photo: string
+    photo: string,
+    created_at: string,
+    updated_at: string
 }
 
 export interface Tournament {

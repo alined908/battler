@@ -67,19 +67,24 @@ class Tournament extends Component<TournamentProps, TournamentState> {
                             <span className="text-2xl font-bold ">
                                 {this.state.tournament.title}
                             </span>
-                            <button onClick={this.playGame} className="bg-green-400 hover:bg-green-600 text-white font-semibold py-2 px-5 shadow rounded">
+                            <button onClick={this.playGame} className="flex items-center bg-white hover:bg-gray-100 text-green-500 text-sm font-semibold py-2 px-3 shadow rounded">
+                                <svg className="mr-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" version="1.1">
+                                    <g id="surface1">
+                                        <path style={{fill:"#48bb78",strokeWidth:"32",strokeLinecap:"butt",strokeLinejoin:"miter",stroke: "-moz-initialrgb(0%,0%,0%)",strokeOpacity: 1,strokeMiterlimit:10}} d="M 112 111 L 112 401 C 112 418.444444 129 429.555556 143 421.111111 L 390.888889 272.777778 C 403 265.555556 403 246.444444 390.888889 239.222222 L 143 90.888889 C 129 82.444444 112 93.555556 112 111 Z M 112 111 " transform="matrix(0.0351562,0,0,0.0351562,0,0)"/>
+                                    </g>
+                                </svg>
                                 Play
                             </button>
                         </div>
-                        <p className="text-gray-700 text-base">
+                        <div className="text-xs">
+                            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 font-semibold text-gray-700 mr-2">#bts</span>
+                            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 font-semibold text-gray-700 mr-2">#yolo</span>
+                            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 font-semibold text-gray-700">#music</span>
+                        </div>
+                        <p className="text-gray-700 text-sm mt-8">
                             {this.state.tournament.description}
                         </p>
                         
-                    </div>
-                    <div className="py-4">
-                        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">#Tag1</span>
-                        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">#Tag2</span>
-                        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">#Tag3</span>
                     </div>
                 </div>
                 <hr className="my-6"/>

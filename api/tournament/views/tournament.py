@@ -7,6 +7,7 @@ from rest_framework import permissions, status
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page 
 from django.utils.decorators import method_decorator
+import json
 
 class TournamentListView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -28,25 +29,37 @@ class TournamentListView(APIView):
 
 class TournamentView(APIView):
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
 
     def get_tournament(self, hash: str) -> Tournament:
-        tournament = get_object_or_404(Tournament, pk=hash)
+        tournament = get_object_or_404(Tournament, url=hash)
         return tournament
 
     # @method_decorator(cache_page(60 * 5))
     def get(self, request, *args, **kwargs) -> Response:
-        tournament = self.get_tournament(kwargs['id'])
+        tournament = self.get_tournament(kwargs['url'])
         serializer = TournamentSerializer(tournament)
         response = Response(serializer.data, status=status.HTTP_200_OK)
         
         return response
 
     def patch(self, request, *args, **kwargs) -> Response:
-        pass
+        tournament = self.get_tournament(kwargs['url'])
+        data = request.data.dict()
+        data['tags'] = json.loads(data['tags'])
+    
+        serializer = TournamentSerializer(tournament, request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, *args, **kwargs) -> Response:
-        pass
+        tournament = self.get_tournament(kwargs['url'])
+        tournament.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class TournamentEntryListView(APIView):
 
@@ -58,22 +71,23 @@ class TournamentEntryListView(APIView):
     def post(self, request, *args, **kwargs) -> Response:
         
         entries = []
+        tournament = Tournament.objects.get(url=kwargs['url'])
 
         for entry in request.data.getlist('files'):
             entry_obj = {
-                'tournament': kwargs['id'],
+                'tournament': tournament.id,
                 'title': entry.name,
                 'photo': entry
             }
 
             entries.append(entry_obj)
- 
+        print(entries)
         entry_serializer = TournamentEntrySerializer(data=entries, many=True)
 
         if entry_serializer.is_valid():
             entry_serializer.save()
             return Response(entry_serializer.data, status=status.HTTP_201_CREATED)
-        
+        print(entry_serializer.errors)
         return Response(entry_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TournamentEntryView(APIView):
@@ -103,12 +117,17 @@ class GameView(APIView):
 
     permission_classes = [permissions.AllowAny]
 
+    def get_tournament(self, hash: str) -> Tournament:
+        tournament = get_object_or_404(Tournament, url=hash)
+        return tournament
+
     def get(self, request, *args, **kwargs) -> Response:
         if not request.session.exists(request.session.session_key):
             return Response("No session available", status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            game = Game.objects.get(session_id=request.session.session_key, tournament_id=kwargs['id'], is_gameend=False)
+            tournament = self.get_tournament(kwargs['url'])
+            game = Game.objects.get(session_id=request.session.session_key, tournament=tournament, is_gameend=False)
             serializer = GameSerializer(game)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Game.DoesNotExist:
@@ -123,8 +142,8 @@ class GameView(APIView):
         if not request.session.exists(request.session.session_key):
             request.session.create()
         
-
-        game = Game.objects.create(bracket_size=int(request.data['bracket_size']), session_id=request.session.session_key, tournament_id=kwargs['id'])
+        tournament = self.get_tournament(kwargs['url'])
+        game = Game.objects.create(bracket_size=int(request.data['bracket_size']), session_id=request.session.session_key, tournament=tournament)
         serializer = GameSerializer(game)
         response = Response(serializer.data, status=status.HTTP_201_CREATED)
         response.set_cookie('sessionid', request.session.session_key, httponly=True)
@@ -135,7 +154,8 @@ class GameView(APIView):
         Request - end_game
         Response - Send 
         """
-        game = Game.objects.get(session_id=request.session.session_key, tournament_id=kwargs['id'], is_gameend=False)
+        tournament = self.get_tournament(kwargs['url'])
+        game = Game.objects.get(session_id=request.session.session_key, tournament=tournament, is_gameend=False)
         game.is_gameend = True
         game.save()
 

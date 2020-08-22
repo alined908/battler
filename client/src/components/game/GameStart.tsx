@@ -33,7 +33,7 @@ class GameStart extends Component<GameStartProps, GameStartState> {
 
     createGame = () => {
         axiosClient.request({
-            url:  `api/tournaments/${this.props.tournament.id}/game/`,
+            url:  `api/tournaments/${this.props.tournament.url}/game/`,
             method: 'POST',
             data: {
                 bracket_size: this.state.bracketSize

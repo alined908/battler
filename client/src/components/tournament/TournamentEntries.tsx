@@ -38,7 +38,7 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
         }
        
         axiosClient.request({
-            url: `api/tournaments/${this.props.tournament.id}/entry/`,
+            url: `api/tournaments/${this.props.tournament.url}/entry/`,
             method: 'POST',
             data,
             headers: {
@@ -55,7 +55,7 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
     deleteEntry = (entry: TournamentEntryType) => {
         
         axiosClient.request({
-            url: `api/tournaments/${this.props.tournament.id}/entry/${entry.id}/`,
+            url: `api/tournaments/${this.props.tournament.url}/entry/${entry.id}/`,
             method: 'DELETE'
         }).then((response) => {
             console.log(response.data)
@@ -72,7 +72,7 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
 
     editEntry = (entry: TournamentEntryType, title: string) => {
         axiosClient.request({
-            url: `api/tournaments/${this.props.tournament.id}/entry/${entry.id}/`,
+            url: `api/tournaments/${this.props.tournament.url}/entry/${entry.id}/`,
             method: 'PATCH',
             data: {
                 title
@@ -120,11 +120,11 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
                     <div className='flex item-center'>
                         <div className="bg-gray-200 text-sm text-gray-500 leading-none border-2 border-gray-200 rounded inline-flex mr-10">
                             <button onClick={() => this.showDisplay(EntriesDisplay.Grid)} className={`inline-flex items-center transition-colors duration-300 ease-in focus:outline-none hover:text-blue-400 focus:text-blue-400 px-4 py-2 ${this.state.display === EntriesDisplay.Grid && 'active'}`} id="grid">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="fill-current w-4 h-4 mr-2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="fill-current w-4 h-4 mr-2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                                 <span className="font-semibold">Grid</span>
                             </button>
                             <button onClick={() => this.showDisplay(EntriesDisplay.List)} className={`inline-flex items-center transition-colors duration-300 ease-in focus:outline-none text-semibold hover:text-blue-400 focus:text-blue-400 px-4 py-2 ${this.state.display === EntriesDisplay.List && 'active'}`} id="list">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="fill-current w-4 h-4 mr-2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="fill-current w-4 h-4 mr-2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                                 <span className="font-semibold">List</span>
                             </button>
                         </div>
@@ -172,6 +172,7 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
                     {this.state.display === EntriesDisplay.Grid ?
                         this.state.tournament.entries.map((entry) => 
                             <TournamentEntry
+                                key={entry.id}
                                 display={this.state.display}
                                 entry={entry}
                                 handleDelete={() => this.deleteEntry(entry)}
@@ -190,6 +191,7 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
                                 </tr>
                                 {this.state.tournament.entries.map((entry) => 
                                     <TournamentEntry
+                                        key={entry.id}
                                         display={this.state.display}
                                         entry={entry}
                                         handleDelete={() => this.deleteEntry(entry)}

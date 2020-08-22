@@ -26,7 +26,7 @@ class GameEnd extends Component<GameEndProps, GameEndState> {
 
     restartGame = () => {
         axiosClient.request({
-            url:  `api/tournaments/${this.props.tournament.id}/game/`,
+            url:  `api/tournaments/${this.props.tournament.url}/game/`,
             method: 'PATCH',
             data: {
                 is_endgame: true

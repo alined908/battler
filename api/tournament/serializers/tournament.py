@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from tournament.models import Tournament, Game, Battle, TournamentEntry
 from django.contrib.sessions.models import Session
+from taggit_serializer.serializers import (TagListSerializerField,
+                                           TaggitSerializer)
 
 class TournamentSimpleSerializer(serializers.ModelSerializer):
     
@@ -8,9 +10,10 @@ class TournamentSimpleSerializer(serializers.ModelSerializer):
         model = Tournament
         fields = ('id', 'avatar', 'title', 'description', 'privacy', 'is_nsfw', 'creator', 'created_at', 'updated_at')
 
-class TournamentSerializer(serializers.ModelSerializer):
+class TournamentSerializer(TaggitSerializer, serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False, allow_null=True, allow_blank=True)
     entries = serializers.SerializerMethodField('_get_entries')
+    tags = TagListSerializerField()
 
     def _get_entries(self, obj):
         entries = TournamentEntry.objects.filter(tournament=obj)

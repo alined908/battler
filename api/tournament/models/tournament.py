@@ -7,14 +7,15 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.postgres.search import SearchVector
 from taggit.managers import TaggableManager
+from django.utils.translation import ugettext_lazy as _
 import uuid
 import random
 
 def tournament_photo_directory(instance, filename):
-    return f'uploads/tournaments/{instance.tournament.id}/{instance.id}'
+    return f'uploads/tournaments/{instance.tournament.url}/{instance.id}'
 
 def tournament_avatar_directory(instance, filename):
-    return f'uploads/tournaments/{instance.tournament.id}/avatar'
+    return f'uploads/tournaments/{instance.url}/avatar'
 
 class TournamentManager(models.Manager):
 
@@ -25,8 +26,8 @@ class TournamentManager(models.Manager):
         return tournaments
 
 class Tournament(Timestamps):
-    id = models.SlugField(primary_key=True, default=generate_random_hash, editable=True, unique=True)
-    avatar = models.FileField(upload_to=tournament_avatar_directory)
+    url = models.URLField(default=generate_random_hash, unique=True)
+    avatar = models.FileField(upload_to=tournament_avatar_directory, null=True, blank=True)
     description = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -34,7 +35,7 @@ class Tournament(Timestamps):
     privacy = models.IntegerField(choices=TournamentPrivacy.choices(), default=TournamentPrivacy.PUBLIC)
     is_nsfw = models.BooleanField()
     tags = TaggableManager()
-    
+
     objects = TournamentManager()
 
 class TournamentEntry(Timestamps):

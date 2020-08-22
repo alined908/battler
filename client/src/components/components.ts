@@ -11,6 +11,7 @@ import Tournaments from './tournament/Tournaments'
 import TournamentCard from './tournament/TournamentCard'
 import TournamentEntries from './tournament/TournamentEntries'
 import TournamentEntry from './tournament/TournamentEntry'
+import TournamentEditForm from './tournament/TournamentEditForm'
 import TournamentEntrySkeleton from './tournament/TournamentEntrySkeleton'
 import Game from './game/Game'
 import GameStart from './game/GameStart'
@@ -26,6 +27,7 @@ export {
     Battle,
     BattleEntry,
     Tournament,
+    TournamentEditForm,
     TournamentCard,
     Tournaments,
     TournamentEntry,

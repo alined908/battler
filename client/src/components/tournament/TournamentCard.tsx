@@ -11,7 +11,7 @@ class TournamentCard extends Component<Props> {
     render() {
 
         return (
-            <Link to={`/tournaments/${this.props.tournament.id}`}>
+            <Link to={`/tournaments/${this.props.tournament.url}`}>
                 <div className="max-w-sm rounded border hover:border-transparent hover:shadow-lg bg-white">
                     {/* <img className="w-full" src="/img/card-top.jpg" alt="Sunset in the mountains"/> */}
                     <div className="px-6 py-4">

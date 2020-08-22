@@ -29,7 +29,7 @@ class TournamentTest(APITestCase):
 
     def test_tournament_get(self):
         tournament = create_tournament(**self.tournament_data)
-        response = self.client.get(f'/api/tournaments/{tournament.id}/')
+        response = self.client.get(f'/api/tournaments/{tournament.url}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     def test_game_create(self):
@@ -38,7 +38,7 @@ class TournamentTest(APITestCase):
         for i in range(16):
             entry = create_tournament_entry("something" + str(i), tournament)
 
-        response = self.client.post(f'/api/tournaments/{tournament.id}/game/', data = self.game_data)
+        response = self.client.post(f'/api/tournaments/{tournament.url}/game/', data = self.game_data)
         #print(json.dumps(response.data, indent=4))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(len(response.data['battles']), 8)
@@ -55,9 +55,9 @@ class TournamentTest(APITestCase):
             battles[battle['id']] = winner['id']
 
         for battle_id in battles:
-            response = self.client.patch(f'/api/tournaments/{tournament.id}/battle/{battle_id}/', {"winner": battles[battle_id]})
+            response = self.client.patch(f'/api/tournaments/{tournament.url}/battle/{battle_id}/', {"winner": battles[battle_id]})
 
-        response = self.client.get(f'/api/tournaments/{tournament.id}/game/')
+        response = self.client.get(f'/api/tournaments/{tournament.url}/game/')
         print(json.dumps(response.data, indent=4))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['battles']) * 2 or 1, num_battles)
@@ -69,7 +69,7 @@ class TournamentTest(APITestCase):
         for i in range(16):
             entry = create_tournament_entry("something" + str(i), tournament)
 
-        response = self.client.post(f'/api/tournaments/{tournament.id}/game/', data = self.game_data)
+        response = self.client.post(f'/api/tournaments/{tournament.url}/game/', data = self.game_data)
         response = self.play_game(response, tournament)
         response = self.play_game(response, tournament)
         response = self.play_game(response, tournament)
@@ -94,11 +94,11 @@ class TournamentEntityTest(APITestCase):
         mock = SimpleUploadedFile('file.png', b"file_content", content_type='image/png')
 
         self.entry_data = {
-            "tournament": tournament.id,
+            "tournament": tournament.url,
             'title': 'something',
             'photo': mock
         }
-        response = self.client.post(f'/api/tournaments/{tournament.id}/photos/', data=self.entry_data)
+        response = self.client.post(f'/api/tournaments/{tournament.url}/photos/', data=self.entry_data)
         print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         

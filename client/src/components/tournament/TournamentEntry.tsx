@@ -32,7 +32,13 @@ class TournamentEntry extends Component<TournamentEntryProps> {
     }
 
     onSubmit = () => {
-        this.setState({isEditing: false}, () => this.props.handleEdit(this.state.entry, this.state.titleField))
+        let callback;
+        callback = () => {}
+
+        if (this.state.titleField !== this.state.entry.title){
+            callback = () => this.props.handleEdit(this.state.entry, this.state.titleField)
+        } 
+        this.setState({isEditing: false}, callback)
     }
 
     editField = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,9 +52,6 @@ class TournamentEntry extends Component<TournamentEntryProps> {
             <>
                 <button onClick={this.onSubmit} className="bg-white hover:bg-gray-100 text-xs text-blue-500 border font-semibold py-2 px-3 rounded mr-2">
                     Submit
-                </button>
-                <button onClick={this.toggleEdit} className="bg-white hover:bg-gray-100 text-xs text-red-500 border font-semibold py-2 px-3 rounded">
-                    Close
                 </button>
             </>
             :

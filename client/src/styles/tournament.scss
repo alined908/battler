@@ -33,3 +33,36 @@
   }
 
   .active {background: white; color: #63b3ed;}
+
+ .tag-input-wrapper{
+  position: relative;
+  width: 100%;
+  height: auto;
+  min-height: 2.375em;
+  padding: .1875em .375em;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 1rem;
+  background: #fff;
+  color: #333;
+  border: 1px solid #e1e1e1;
+  border-radius: 3px;
+ }
+
+ .tag-input {
+  width: auto;
+  flex-grow: 1;
+  height: 1.875em;
+  padding: 0 0 0 .1875em;
+  margin: 0 .1875em;
+  font-size: .85rem;
+  line-height: 1;
+  background: transparent;
+  color: #333;
+  border: none;
+  border-radius: 3px;
+  outline: 0;
+  box-shadow: none;
+ }

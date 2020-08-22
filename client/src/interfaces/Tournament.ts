@@ -10,13 +10,16 @@ export interface TournamentEntry {
 }
 
 export interface Tournament {
-    id: string,
+    id: number,
+    url: string,
     title: string,
+    avatar: string,
     description: string,
     is_nsfw: boolean,
     privacy: number,
     creator: User,
     entries: TournamentEntry[]
     created_at: string,
-    updated_at: string
+    updated_at: string,
+    tags: string[]
 }

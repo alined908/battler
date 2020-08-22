@@ -5,15 +5,16 @@ from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
 
 class TournamentSimpleSerializer(serializers.ModelSerializer):
-    
+    tags = TagListSerializerField(required=False)
+
     class Meta:
         model = Tournament
-        fields = ('id', 'avatar', 'title', 'description', 'privacy', 'is_nsfw', 'creator', 'created_at', 'updated_at')
+        fields = ('id', 'avatar', 'title', 'description', 'privacy', 'tags', 'url', 'is_nsfw', 'creator', 'created_at', 'updated_at')
 
 class TournamentSerializer(TaggitSerializer, serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False, allow_null=True, allow_blank=True)
     entries = serializers.SerializerMethodField('_get_entries')
-    tags = TagListSerializerField()
+    tags = TagListSerializerField(required=False)
 
     def _get_entries(self, obj):
         entries = TournamentEntry.objects.filter(tournament=obj)
@@ -28,7 +29,7 @@ class GameSerializer(serializers.ModelSerializer):
     winner = serializers.SerializerMethodField('_get_winner')
 
     def _get_battles(self, obj):
-        battles = obj.generate_battles_current_round()
+        battles = obj.current_battles()
         return BattleSerializer(battles, many=True).data
 
     def _get_winner(self, obj):
@@ -38,7 +39,7 @@ class GameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Game
-        fields = ('id', 'bracket_size', 'tournament', 'winner', 'battles')
+        fields = ('id', 'bracket_size', 'game_size', 'tournament', 'winner', 'battles')
 
 class TournamentEntrySerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,4 +55,4 @@ class BattleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Battle
-        fields = ('id', 'entries', 'winner')
+        fields = ('id', 'entries', 'winner', 'battle_index')

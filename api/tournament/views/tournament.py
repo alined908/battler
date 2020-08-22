@@ -24,7 +24,7 @@ class TournamentListView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+       
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TournamentView(APIView):
@@ -81,13 +81,13 @@ class TournamentEntryListView(APIView):
             }
 
             entries.append(entry_obj)
-        print(entries)
+        
         entry_serializer = TournamentEntrySerializer(data=entries, many=True)
 
         if entry_serializer.is_valid():
             entry_serializer.save()
             return Response(entry_serializer.data, status=status.HTTP_201_CREATED)
-        print(entry_serializer.errors)
+        
         return Response(entry_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TournamentEntryView(APIView):
@@ -143,7 +143,12 @@ class GameView(APIView):
             request.session.create()
         
         tournament = self.get_tournament(kwargs['url'])
-        game = Game.objects.create(bracket_size=int(request.data['bracket_size']), session_id=request.session.session_key, tournament=tournament)
+        game = Game.objects.create(
+            bracket_size=int(request.data['bracket_size']), 
+            game_size=int(request.data['game_size']), 
+            session_id=request.session.session_key, 
+            tournament=tournament
+        )
         serializer = GameSerializer(game)
         response = Response(serializer.data, status=status.HTTP_201_CREATED)
         response.set_cookie('sessionid', request.session.session_key, httponly=True)

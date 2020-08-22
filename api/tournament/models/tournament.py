@@ -1,6 +1,6 @@
 from django.db import models
 from .user import User
-from .enums import BracketTypes, BattleSize, TournamentPrivacy
+from .enums import BattleSize, TournamentPrivacy, GameSize
 from .utils import Timestamps, generate_random_hash
 from django.contrib.sessions.models import Session
 from django.db.models.signals import post_save, post_delete
@@ -34,7 +34,7 @@ class Tournament(Timestamps):
     password = models.CharField(max_length=32, null=True, blank=True)
     privacy = models.IntegerField(choices=TournamentPrivacy.choices(), default=TournamentPrivacy.PUBLIC)
     is_nsfw = models.BooleanField()
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     objects = TournamentManager()
 
@@ -48,17 +48,19 @@ class Game(Timestamps):
     tournament = models.ForeignKey(Tournament, on_delete=models.SET_NULL, null=True, blank=True)
     session = models.ForeignKey(Session, on_delete=models.DO_NOTHING)
     player = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    bracket_size = models.IntegerField(choices=BracketTypes.choices())
-    curr_round = models.IntegerField(choices=BracketTypes.choices())
-    winner = models.ForeignKey(TournamentEntry, on_delete=models.SET_NULL, null=True, blank=True)
+    bracket_size = models.IntegerField()
+    curr_round = models.IntegerField()
+    game_size = models.IntegerField(choices=GameSize.choices())
+    winner = models.ForeignKey(TournamentEntry, on_delete=models.SET_NULL, null=True, blank=True, related_name='winners')
     curr_battle = models.IntegerField(default=0)
     is_gameend = models.BooleanField(default=False)
+    entries = models.ManyToManyField(TournamentEntry)
 
     def save(self, *args, **kwargs):
         if not self.pk:
             self.curr_round = self.bracket_size
 
-        if self.curr_battle == self.curr_round // 2:
+        if self.curr_battle == self.curr_round // self.game_size:
             self.advance_round()
         super(Game, self).save(*args, **kwargs)
 
@@ -66,57 +68,78 @@ class Game(Timestamps):
         """
         Advance round if all battles determined
         """
-        if self.curr_round == BracketTypes.TWO:
-            self.curr_round = BracketTypes.ONE
+        # If on round of game_size, advance to round of 1
+        if self.curr_round == self.game_size:
+            self.curr_round = 1
             self.save()
             return
 
-        past_round = Round.objects.get(round_num=self.curr_round, game=self) 
-        past_round_winners = Battle.objects.filter(round=past_round).exclude(winner=None).values_list('winner', flat=True)
-
-        self.curr_round = self.curr_round//2
-        curr_round = Round.objects.create(game=self, round_num=self.curr_round)
-        curr_round.entries.set(past_round_winners)
-        curr_round.generate_battles()
+        self.curr_round = self.curr_round//self.game_size
+        # Create next round and generate battles
+        next_round = Round.objects.create(game=self, round_num=self.curr_round)
+        next_round.generate_battles()
         self.curr_battle = 0
         self.save()
 
-    def generate_battles_current_round(self):
+    def current_battles(self):
+        """
+        Get all battles of current round for serializer
+        """
         battles = []
 
-        if self.curr_round != BracketTypes.ONE:
-            curr_round = Round.objects.get(game=self, round_num = self.curr_round)
-            battles = Battle.objects.filter(round=curr_round, winner=None)
+        if self.curr_round != 1:
+            battles = Battle.objects.filter(round__round_num=self.curr_round, winner=None)
 
         return battles
 
 class Round(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    round_num = models.IntegerField(choices=BracketTypes.choices())
-    entries = models.ManyToManyField(TournamentEntry)
+    round_num = models.IntegerField()
 
     def generate_battles(self):
         """
         Generate set of battles each round change
         """
-        pairs = []
-        options = list(self.entries.all())
-        random.shuffle(options)
+        game_size = self.game.game_size
 
-        for i in range(0, len(options), 2):
-            battle = Battle.objects.create(round=self)
-            battle.entries.set(options[i: i + 2])
+        if self.round_num == self.game.bracket_size:
+            options = list(TournamentEntry.objects.filter(tournament=self.game.tournament))
+            random.shuffle(options)
+
+            for i in range(0, len(options), game_size):
+                battle = Battle.objects.create(round=self, battle_index=i//game_size)
+                battle.entries.set(options[i: i + self.game.game_size])
+        else:
+            battle_entries = []
+            battle_counter = 0
+        
+            while battle_counter <= self.round_num:
+
+                if battle_counter != 0 and battle_counter % game_size == 0:
+                    next_battle = Battle.objects.create(round=self, battle_index=battle_counter//game_size - 1)
+                    next_battle.entries.set(battle_entries)
+                    battle_entries = []
+
+                if battle_counter == self.round_num:
+                    break
+
+                prev_battle = Battle.objects.get(round__round_num=self.round_num * game_size, battle_index=battle_counter)
+                battle_entries.append(prev_battle.winner)
+                battle_counter += 1
 
 class Battle(models.Model):
-    round = models.ForeignKey(Round, on_delete=models.CASCADE)
+    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name='battles')
+    battle_index = models.IntegerField()
     entries = models.ManyToManyField(TournamentEntry)
     winner = models.ForeignKey(TournamentEntry, on_delete=models.CASCADE, related_name="wins", null=True, blank=True)
 
 @receiver(post_save, sender=Battle)
 def advance_game(sender, instance, created, **kwargs):
+    # If winner for battle picked, advanced game current battle
     if instance.winner:
         instance.round.game.curr_battle += 1
-        if instance.round.round_num == BracketTypes.TWO:
+        #If last battle declare game winner
+        if instance.round.round_num == instance.round.game.game_size:
             instance.round.game.winner = instance.winner
 
         instance.round.game.save()
@@ -127,8 +150,8 @@ def assign_entities(sender, instance, created, **kwargs):
         entries = list(TournamentEntry.objects.filter(tournament=instance.tournament).values_list('id', flat=True))
         random_entries = random.sample(entries, instance.bracket_size)
         selected_entries = TournamentEntry.objects.filter(id__in=random_entries)
+        instance.entries.set(selected_entries)
         start_round = Round.objects.create(game=instance, round_num=instance.bracket_size)
-        start_round.entries.set(selected_entries)
         start_round.generate_battles()
 
 @receiver(post_delete, sender=TournamentEntry)

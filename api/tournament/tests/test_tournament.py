@@ -14,11 +14,12 @@ class TournamentTest(APITestCase):
             "title": "Test",
             "privacy": 2,
             "is_nsfw": False,
-            "creator": self.user.pk
+            "creator": self.user.pk,
         }
 
         self.game_data = {
-            "bracket_size": 16
+            "bracket_size": 16,
+            'game_size': 2
         }
 
     def test_tournament_create(self):
@@ -60,7 +61,7 @@ class TournamentTest(APITestCase):
         response = self.client.get(f'/api/tournaments/{tournament.url}/game/')
         print(json.dumps(response.data, indent=4))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['battles']) * 2 or 1, num_battles)
+        self.assertEqual(len(response.data['battles']) * response.data['game_size'] or 1, num_battles)
         return response
 
     def test_game_advance_round(self):
@@ -74,6 +75,20 @@ class TournamentTest(APITestCase):
         response = self.play_game(response, tournament)
         response = self.play_game(response, tournament)
         response = self.play_game(response, tournament)
+
+    def test_game_game_size_3(self):
+        tournament = create_tournament(**self.tournament_data)
+
+        for i in range(27):
+            entry = create_tournament_entry("something" + str(i), tournament)
+
+        game_data = {'bracket_size': 27, 'game_size': 3}
+
+        response = self.client.post(f'/api/tournaments/{tournament.url}/game/', data = game_data)
+        response = self.play_game(response, tournament)
+        response = self.play_game(response, tournament)
+        response = self.play_game(response, tournament)
+
 
 class TournamentEntityTest(APITestCase):
 
@@ -99,7 +114,6 @@ class TournamentEntityTest(APITestCase):
             'photo': mock
         }
         response = self.client.post(f'/api/tournaments/{tournament.url}/photos/', data=self.entry_data)
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         
         

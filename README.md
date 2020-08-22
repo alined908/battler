@@ -27,6 +27,7 @@ Todo
 - [x] Tournament (Tag, Edit)
 - [] Bracketize
 - [] Tournament stats + Game Design
+- [] Tournaments
 
 - [] User accounts
 - [] List past games

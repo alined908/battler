@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from tournament.models import Tournament, Game, Battle, TournamentEntry
+from tournament.models import Tournament, Game, Battle, TournamentEntry, Round
 from django.contrib.sessions.models import Session
 from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
@@ -27,6 +27,7 @@ class TournamentSerializer(TaggitSerializer, serializers.ModelSerializer):
 class GameSerializer(serializers.ModelSerializer):
     battles = serializers.SerializerMethodField('_get_battles')
     winner = serializers.SerializerMethodField('_get_winner')
+    bracket = serializers.SerializerMethodField('_get_bracket')
 
     def _get_battles(self, obj):
         battles = obj.current_battles()
@@ -37,16 +38,31 @@ class GameSerializer(serializers.ModelSerializer):
             return None
         return TournamentEntrySerializer(obj.winner).data
 
+    def _get_bracket(self, obj):
+        rounds = obj.rounds.all()
+        return RoundSerializer(rounds, many=True).data
+
     class Meta:
         model = Game
-        fields = ('id', 'bracket_size', 'game_size', 'tournament', 'winner', 'battles')
+        fields = ('id', 'bracket_size', 'battle_size', 'tournament', 'winner', 'battles', 'bracket')
 
 class TournamentEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentEntry
         fields = '__all__'
 
-class BattleSerializer(serializers.ModelSerializer):
+class RoundSerializer(serializers.ModelSerializer):
+    battles = serializers.SerializerMethodField('_get_battles')
+
+    def _get_battles(self, obj):
+        battles = obj.battles.all()
+        return BattleSimpleSerializer(battles, many=True).data
+
+    class Meta:
+        model = Round
+        fields = '__all__'
+
+class BattleSimpleSerializer(serializers.ModelSerializer):
     entries = serializers.SerializerMethodField('_get_entries')
 
     def _get_entries(self, obj):
@@ -56,3 +72,10 @@ class BattleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Battle
         fields = ('id', 'entries', 'winner', 'battle_index')
+
+class BattleSerializer(BattleSimpleSerializer):
+    round = RoundSerializer()
+
+    class Meta:
+        model = Battle
+        fields = '__all__'

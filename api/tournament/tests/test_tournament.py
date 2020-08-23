@@ -19,7 +19,7 @@ class TournamentTest(APITestCase):
 
         self.game_data = {
             "bracket_size": 16,
-            'game_size': 2
+            'battle_size': 2
         }
 
     def test_tournament_create(self):
@@ -59,9 +59,8 @@ class TournamentTest(APITestCase):
             response = self.client.patch(f'/api/tournaments/{tournament.url}/battle/{battle_id}/', {"winner": battles[battle_id]})
 
         response = self.client.get(f'/api/tournaments/{tournament.url}/game/')
-        print(json.dumps(response.data, indent=4))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['battles']) * response.data['game_size'] or 1, num_battles)
+        self.assertEqual(len(response.data['battles']) * response.data['battle_size'] or 1, num_battles)
         return response
 
     def test_game_advance_round(self):
@@ -82,7 +81,7 @@ class TournamentTest(APITestCase):
         for i in range(27):
             entry = create_tournament_entry("something" + str(i), tournament)
 
-        game_data = {'bracket_size': 27, 'game_size': 3}
+        game_data = {'bracket_size': 27, 'battle_size': 3}
 
         response = self.client.post(f'/api/tournaments/{tournament.url}/game/', data = game_data)
         response = self.play_game(response, tournament)

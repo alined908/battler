@@ -90,10 +90,9 @@ class Game extends Component<GameProps, GameState> {
 
     render () {
         const inGame = !this.state.promptGameStart && this.state.game
-        console.log(this.state.game)
-        console.log(this.state.tournament)
+        
         return (
-            <div className="h-full">
+            <div className="flex flex-col flex-grow items-center">
                 {this.state.promptGameStart && this.state.tournament && 
                     <GameStart
                         tournament={this.state.tournament}

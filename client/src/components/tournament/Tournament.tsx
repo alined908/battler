@@ -76,7 +76,6 @@ class Tournament extends Component<TournamentProps, TournamentState> {
             :
             <div className="flex justify-center flex-col py-10 px-5 h-full bg-gray-100 max-w-screen-lg mx-auto w-full" >
                 <div className="container rounded mx-auto">
-                    {/* <img className="w-full" src="/img/card-top.jpg" alt="Sunset in the mountains"/> */}
                     <div className="py-4">
                         <div className="flex">
                             <div className="rounded overflow-hidden shadow-md w-48 h-48">

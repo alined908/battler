@@ -145,7 +145,7 @@ class GameView(APIView):
         tournament = self.get_tournament(kwargs['url'])
         game = Game.objects.create(
             bracket_size=int(request.data['bracket_size']), 
-            game_size=int(request.data['game_size']), 
+            battle_size=int(request.data['battle_size']), 
             session_id=request.session.session_key, 
             tournament=tournament
         )
@@ -178,3 +178,10 @@ class BattleView(APIView):
         battle.save()
 
         return Response("Successfully saved battle", status=status.HTTP_200_OK)
+
+class BracketView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, *args, **kwargs):
+
+        return Response("hello", status=status.HTTP_200_OK)

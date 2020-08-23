@@ -127,22 +127,22 @@ class TournamentEditForm extends Component<EditProps, EditState> {
                     </div>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <form className="w-full py-2">
+                    <form className="w-full">
                         <div className="flex flex-wrap">
-                            <div className="w-full px-3 mb-4">
+                            <div className="w-full px-3 mb-2">
                                 <label className="block text-xs font-bold mb-2" htmlFor="title">
                                     Title
                                 </label>
-                                <input id='title' className="appearance-none block w-full bg-white text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="text" value={this.state.title} onChange={(e) => this.handleField(e, 'title')}/>
+                                <input id='title' className="appearance-none block w-full bg-white text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="text" value={this.state.title} onChange={(e) => this.handleField(e, 'title')}/>
                             </div>
-                            <div className="w-full px-3 mb-4">
+                            <div className="w-full px-3 mb-2">
                                 <label className="block text-xs font-bold mb-2" htmlFor="description">
                                     Description
                                 </label>
                                 <input id='description' className="appearance-none block w-full bg-white text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="text" value={this.state.description} onChange={(e) => this.handleField(e, 'description')}/>
                             </div>
                         
-                            <div className="w-full px-3">
+                            <div className="w-full px-3 mb-2">
                                 <label className="block text-xs font-bold mb-2" htmlFor="tags">
                                     Tags
                                 </label>
@@ -166,7 +166,7 @@ class TournamentEditForm extends Component<EditProps, EditState> {
                                     <input className="tag-input focus:border-gray-500" ref={c => { this.tagInput = c; }} onKeyUp={this.handleTagsInput} placeholder="Type and press enter"/>
                                 </div>
                             </div>
-                            <div className="w-full px-3 mb-4">
+                            <div className="w-full px-3 mb-2">
                                 <label className="block text-xs font-bold mb-2" htmlFor="avatar">
                                     Avatar
                                 </label>

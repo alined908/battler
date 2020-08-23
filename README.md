@@ -25,15 +25,19 @@ Todo
 - [x] Search Tournaments
 - [x] Tournament Entry (Multiple, Drag and Drop)
 - [x] Tournament (Tag, Edit)
-- [] Bracketize
-- [] Tournament stats + Game Design
-- [] Tournaments
+- [X] Bracketize
+
+- [x] Battle Design/Transition
+- [] tournament bracket
+- [] Tournament stats
+- [] Tournaments Page (tags)
+
 
 - [] User accounts
 - [] List past games
 - [] Twitch Chatbot
 
-- [] Battle Design/Transition
+- [] Fix Search Bar
 - [] Create Home Page
 
 - [] Deploy

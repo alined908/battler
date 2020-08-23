@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {Game as GameType, Tournament as TournamentType} from '../../interfaces'
-import {BattleEntry} from '../components'
+import {GameBracket} from '../components'
+import Confetti from 'react-confetti'
 import {withRouter, RouteComponentProps} from 'react-router-dom'
 import {axiosClient} from '../../tools/axiosClient'
 
@@ -14,10 +15,14 @@ interface GameEndProps extends RouteComponentProps<TParams> {
 }
 
 interface GameEndState {
-
+    showBracket: boolean
 }
 
 class GameEnd extends Component<GameEndProps, GameEndState> {
+
+    state : GameEndState = {
+        showBracket: false
+    }
 
     getClipboardText = () => {
         const clipboard = document.getElementById("clipboard") as HTMLInputElement
@@ -39,36 +44,42 @@ class GameEnd extends Component<GameEndProps, GameEndState> {
             console.log(error)
         })
     }
+
+    toggleBracket = () => {
+        this.setState({showBracket: !this.state.showBracket})
+    }
     
     render () {
-        console.log(this.props)
+   
         return (
-            <div>
-                Winner is 
-                <BattleEntry
-                    entry={this.props.game.winner!}
-                />
-
-                <div className="flex">
-                    <button onClick={() => {navigator.clipboard.writeText(this.getClipboardText())}} className="w-32 bg-white tracking-wide text-gray-800 font-bold rounded border-b-2 border-red-500 hover:border-red-600 hover:bg-red-500 hover:text-white shadow-md py-2 px-6 inline-flex items-center">
-                        <span className="mx-auto">Share</span>
-                    </button>
-                    <input id='clipboard' className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" type="text" value={`http://localhost:8003/tournaments/${this.props.match.params.id}/`}/>
-                </div>
-                <div>
-                    <button onClick={this.restartGame} className="w-32 bg-white tracking-wide text-gray-800 font-bold rounded border-b-2 border-blue-500 hover:border-blue-600 hover:bg-blue-500 hover:text-white shadow-md py-2 px-6 inline-flex items-center">
-                        <span className="mx-auto">Restart</span>
-                    </button>
-                </div>
-                <div>
-                    Show Bracket
-                </div>
-                <div>
-                    Similar Tournaments
-                </div>
-                <div>
-                    Leave Comment
-                </div>
+            
+            <div className="flex flex-grow justify-center flex-col py-16 px-5 h-full bg-gray-100 max-w-screen-lg mx-auto w-full">
+                <div className="container rounded mx-auto -mt-32">
+                    <div id='canvas' className="flex flex-col justify-center items-center">
+                        <Confetti numberOfPieces={300} gravity={0.05} recycle={false}/>
+                        <div className="flex flex-col items-center">
+                            <div className="text-4xl font-bold mb-8">
+                                {this.props.game.winner!.title} wins!
+                            </div>
+                            <div className="rounded overflow-hidden shadow-md w-64 h-64">
+                                <img src={this.props.game.winner!.photo} className="w-64 object-cover h-64"/>
+                            </div>
+                            <div className="flex justify-between mt-8">
+                                <button onClick={() => {navigator.clipboard.writeText(this.getClipboardText())}} className="mr-2 flex items-center bg-white hover:bg-gray-100 text-blue-500 text-sm font-semibold py-2 px-3 shadow rounded ml-4">
+                                    Share
+                                </button>
+                                <button onClick={this.toggleBracket} className="mr-2 flex items-center bg-white hover:bg-gray-100 text-blue-500 text-sm font-semibold py-2 px-3 shadow rounded ml-4">
+                                    Bracket
+                                </button>
+                                <input id='clipboard' className="hidden bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" type="text" value={`http://localhost:8003/tournaments/${this.props.match.params.id}/`}/>
+                                <button onClick={this.restartGame} className="mr-2 flex items-center bg-white hover:bg-gray-100 text-green-500 text-sm font-semibold py-2 px-3 shadow rounded ml-4">
+                                    Restart
+                                </button>
+                            </div>
+                        </div>
+                        {this.state.showBracket && <GameBracket closeBracket={this.toggleBracket} game={this.props.game}/>}
+                    </div>
+                </div>                
             </div>
         )
     }

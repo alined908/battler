@@ -16,6 +16,7 @@ import TournamentEntrySkeleton from './tournament/TournamentEntrySkeleton'
 import Game from './game/Game'
 import GameStart from './game/GameStart'
 import GameEnd from './game/GameEnd'
+import GameBracket from './game/GameBracket'
 
 export {
     RouterWrapper,
@@ -35,5 +36,6 @@ export {
     TournamentEntries,
     Game,
     GameStart,
-    GameEnd
+    GameEnd,
+    GameBracket
 };

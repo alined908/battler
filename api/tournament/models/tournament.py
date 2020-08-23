@@ -1,6 +1,6 @@
 from django.db import models
 from .user import User
-from .enums import BattleSize, TournamentPrivacy, GameSize
+from .enums import BattleSize, TournamentPrivacy
 from .utils import Timestamps, generate_random_hash
 from django.contrib.sessions.models import Session
 from django.db.models.signals import post_save, post_delete
@@ -44,13 +44,16 @@ class TournamentEntry(Timestamps):
     title = models.CharField(max_length=100)
     photo = models.FileField(upload_to=tournament_photo_directory)
 
+    def __str__(self):
+        return self.title
+
 class Game(Timestamps):
     tournament = models.ForeignKey(Tournament, on_delete=models.SET_NULL, null=True, blank=True)
     session = models.ForeignKey(Session, on_delete=models.DO_NOTHING)
     player = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     bracket_size = models.IntegerField()
     curr_round = models.IntegerField()
-    game_size = models.IntegerField(choices=GameSize.choices())
+    battle_size = models.IntegerField(choices=BattleSize.choices())
     winner = models.ForeignKey(TournamentEntry, on_delete=models.SET_NULL, null=True, blank=True, related_name='winners')
     curr_battle = models.IntegerField(default=0)
     is_gameend = models.BooleanField(default=False)
@@ -60,7 +63,7 @@ class Game(Timestamps):
         if not self.pk:
             self.curr_round = self.bracket_size
 
-        if self.curr_battle == self.curr_round // self.game_size:
+        if self.curr_battle == self.curr_round // self.battle_size:
             self.advance_round()
         super(Game, self).save(*args, **kwargs)
 
@@ -68,13 +71,13 @@ class Game(Timestamps):
         """
         Advance round if all battles determined
         """
-        # If on round of game_size, advance to round of 1
-        if self.curr_round == self.game_size:
+        # If on round of battle_size, advance to round of 1
+        if self.curr_round == self.battle_size:
             self.curr_round = 1
             self.save()
             return
 
-        self.curr_round = self.curr_round//self.game_size
+        self.curr_round = self.curr_round//self.battle_size
         # Create next round and generate battles
         next_round = Round.objects.create(game=self, round_num=self.curr_round)
         next_round.generate_battles()
@@ -88,42 +91,42 @@ class Game(Timestamps):
         battles = []
 
         if self.curr_round != 1:
-            battles = Battle.objects.filter(round__round_num=self.curr_round, winner=None)
+            battles = Battle.objects.filter(round__game=self, round__round_num=self.curr_round, winner=None)
 
         return battles
 
 class Round(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="rounds")
     round_num = models.IntegerField()
 
     def generate_battles(self):
         """
         Generate set of battles each round change
         """
-        game_size = self.game.game_size
+        battle_size = self.game.battle_size
 
         if self.round_num == self.game.bracket_size:
-            options = list(TournamentEntry.objects.filter(tournament=self.game.tournament))
+            options = list(self.game.entries.all())
             random.shuffle(options)
 
-            for i in range(0, len(options), game_size):
-                battle = Battle.objects.create(round=self, battle_index=i//game_size)
-                battle.entries.set(options[i: i + self.game.game_size])
+            for i in range(0, len(options), battle_size):
+                battle = Battle.objects.create(round=self, battle_index=i//battle_size)
+                battle.entries.set(options[i: i + battle_size])
         else:
             battle_entries = []
             battle_counter = 0
         
             while battle_counter <= self.round_num:
 
-                if battle_counter != 0 and battle_counter % game_size == 0:
-                    next_battle = Battle.objects.create(round=self, battle_index=battle_counter//game_size - 1)
+                if battle_counter != 0 and battle_counter % battle_size == 0:
+                    next_battle = Battle.objects.create(round=self, battle_index=battle_counter//battle_size - 1)
                     next_battle.entries.set(battle_entries)
                     battle_entries = []
 
                 if battle_counter == self.round_num:
                     break
 
-                prev_battle = Battle.objects.get(round__round_num=self.round_num * game_size, battle_index=battle_counter)
+                prev_battle = Battle.objects.get(round__game=self.game, round__round_num=self.round_num * battle_size, battle_index=battle_counter)
                 battle_entries.append(prev_battle.winner)
                 battle_counter += 1
 
@@ -139,7 +142,7 @@ def advance_game(sender, instance, created, **kwargs):
     if instance.winner:
         instance.round.game.curr_battle += 1
         #If last battle declare game winner
-        if instance.round.round_num == instance.round.game.game_size:
+        if instance.round.round_num == instance.round.game.battle_size:
             instance.round.game.winner = instance.winner
 
         instance.round.game.save()

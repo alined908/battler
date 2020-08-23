@@ -35,14 +35,23 @@ class Battle extends Component<BattleProps, BattleState> {
     }
 
     render () {
+        console.log(this.props.battle)
         return (
-            <div className="flex">
-                {this.props.battle.entries.map((entry) =>
-                    <BattleEntry 
-                        entry={entry}
-                        determineBattleWinner={this.determineBattleWinner}
-                    /> 
-                )}
+            <div className="flex flex-col flex-grow items-center justify-center max-w-screen-xl w-full">
+
+                <div className="text-4xl font-semibold -mt-10 mb-10">
+                {`Round of ${this.props.battle.round.round_num}`} - {`Battle ${this.props.battle.battle_index + 1}/${this.props.battle.round.round_num/this.props.battle.entries.length}`}
+                </div>
+                
+                <div className="flex w-full justify-evenly items-center">
+                    {this.props.battle.entries.map((entry) =>
+                        <BattleEntry 
+                            entry={entry}
+                            determineBattleWinner={this.determineBattleWinner}
+                        /> 
+                    )}
+                </div>
+                
             </div>
         )
     }

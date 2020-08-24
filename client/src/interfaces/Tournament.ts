@@ -21,5 +21,6 @@ export interface Tournament {
     entries: TournamentEntry[]
     created_at: string,
     updated_at: string,
+    num_plays: number,
     tags: string[]
 }

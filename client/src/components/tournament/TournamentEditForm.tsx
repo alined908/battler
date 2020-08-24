@@ -149,7 +149,7 @@ class TournamentEditForm extends Component<EditProps, EditState> {
                                 <div className="tag-input-wrapper">
                                     {this.state.tags.map((tag, i) => 
                                         <div
-                                        className="px-2 mr-2 text-xs flex bg-white text-blue-400 items-center font-semibold leading-sm py-1 rounded border"
+                                            className="px-2 mr-2 text-xs flex bg-white text-blue-400 items-center font-semibold leading-sm py-1 rounded border"
                                         >
                                             {tag}
                                             <span className="cursor-pointer">
@@ -163,7 +163,12 @@ class TournamentEditForm extends Component<EditProps, EditState> {
                                         </div>
 
                                     )}
-                                    <input className="tag-input focus:border-gray-500" ref={c => { this.tagInput = c; }} onKeyUp={this.handleTagsInput} placeholder="Type and press enter"/>
+                                    <input 
+                                        className="tag-input focus:border-gray-500" 
+                                        ref={c => { this.tagInput = c; }} 
+                                        onKeyUp={this.handleTagsInput} 
+                                        placeholder="Type and press enter"
+                                    />
                                 </div>
                             </div>
                             <div className="w-full px-3 mb-2">

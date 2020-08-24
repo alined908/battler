@@ -78,7 +78,7 @@ class Tournament extends Component<TournamentProps, TournamentState> {
                 <div className="container rounded mx-auto">
                     <div className="py-4">
                         <div className="flex">
-                            <div className="rounded overflow-hidden shadow-md w-48 h-48">
+                            <div className="rounded overflow-hidden shadow-lg w-48 h-48">
                                 <img src={this.state.tournament.avatar} className="w-48 object-cover h-48"/>
                             </div>
                             <div className='flex justify-between flex-grow pl-6'>

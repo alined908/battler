@@ -15,8 +15,12 @@ class TournamentListView(APIView):
     def get(self, request, *args, **kwargs) -> Response:
         tournaments = Tournament.objects.all()
         serializer = TournamentSerializer(tournaments, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        tags = Tournament.tags.most_common()[:8]
+        response = {
+            'tournaments': serializer.data,
+            'tags': tags.values_list('name', flat=True)
+        }
+        return Response(response, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs) -> Response:
         serializer = TournamentSerializer(data = request.data)

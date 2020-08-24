@@ -1,93 +1,61 @@
 import React, {Component} from 'react'
-import {axiosClient} from '../../tools/axiosClient'
-import {Tournament as TournamentType} from '../../interfaces'
-import {SearchDropDown} from '../components'
-import throttle from "lodash/throttle";
-import debounce from "lodash/debounce";
 
-interface SearchProps {}
+interface SearchProps {
+    tags: string[]
+    handleQuery: (query: string) => void
+    removeTag: (tag: string) => void
+}
 
 interface SearchState {
-    query: string,
-    tournaments: TournamentType[]
-    showDropdown: boolean,
-    cachedSearches: string[]
+    query: string
 }
 
 class SearchBar extends Component<SearchProps, SearchState> {
 
-    cachedResults : {[key: string]: [];} 
-    searchDebounced : () => void
-    searchThrottled: () => void
-
-    constructor(props : SearchProps) {
-        super(props)
-        this.state = {
-            query: "",
-            tournaments: [],
-            showDropdown: true,
-            cachedSearches: []
-        }
-        this.searchDebounced = debounce(this.callSearch, 500);
-        this.searchThrottled = throttle(this.callSearch, 500);
-        this.cachedResults = {};
-    }
-
-    callSearch = () => {
-        const cachedResult = this.cachedResults[this.state.query]
-
-        if (cachedResult) {
-            this.setState({tournaments: cachedResult})
-            return;
-        }
-
-        axiosClient.request({
-            url:  `api/search/tournaments/`,
-            method: 'GET',
-            params: {
-                q: this.state.query
-            }
-        }).then((response) => {
-            console.log(response.data)
-            this.cachedResults[this.state.query] = response.data
-            this.setState({tournaments: response.data, showDropdown: true})
-            
-        }).catch((error) => {
-            console.log(error)
-        })
-    }
-
-    closeDropDown = () => {
-        this.setState({showDropdown: false})
+    state: SearchState = {
+        query: ''
     }
 
     changeQuery = (event: React.FormEvent<HTMLInputElement>): void => {
         const query = event.currentTarget.value
-        this.setState({query, showDropdown: query.length > 0 ? true : false}, () => this.callSearch())
+        this.setState({query}, () => this.props.handleQuery(this.state.query))
     }
 
     render () {
         return (
-            <div className="relative inline-block flex flex-grow max-w-md">
-                <div className="bg-gray-100 max-w-md rounded-full flex w-full p-3 border border-gray-200 mx-auto align-items">
-                    <svg className=" w-5 text-gray-600 h-5" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="relative inline-block flex flex-grow max-w-xl">
+                <div className="bg-white max-w-xl rounded flex w-full px-3 py-3 border-gray-200 mx-auto  shadow-md items-center">
+                    <svg className="w-5 text-gray-600 h-5" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
+                    <div className='flex items-center ml-4'>
+                        {this.props.tags.map((tag, i) => 
+                            <div 
+                                key={i} 
+                                className={`bg-white bg-green-400 text-white flex items-center text-xs font-bold py-2 pr-3 pl-1 rounded shadow-md justify-between mr-2`}
+                            >
+                                <span className="cursor-pointer mr-2">
+                                    <svg id="close-button" onClick={() => this.props.removeTag(tag)} className="ml-2 h-2 w-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 375">
+                                        <g ill-rule="nonzero">
+                                            <path d="M368.663 339.414L35.873 6.624c-8.076-8.076-21.172-8.076-29.249 0-8.076 8.077-8.076 21.173 0 29.25l332.79 332.79c8.078 8.076 21.172 8.076 29.25 0 8.076-8.078 8.076-21.172 0-29.25z"></path><path d="M339.414 6.624L6.624 339.414c-8.076 8.077-8.077 21.172 0 29.25 8.078 8.076 21.173 8.076 29.25 0l332.79-332.79c8.076-8.078 8.076-21.172 0-29.25-8.078-8.077-21.172-8.077-29.25 0z">
+                                            </path>
+                                        </g>
+                                    </svg>
+                                </span>
+                                #{tag}
+                            </div>
+                        )}
+                    </div>
+                    
                     <input 
                         type="search" 
                         name="" 
                         onChange={this.changeQuery}
                         placeholder="Search tournaments.."
                         value={this.state.query}
-                        className="w-full pl-4 text-sm outline-none focus:outline-none bg-transparent"
+                        className="h-8 w-full pl-4 text-sm outline-none focus:outline-none bg-transparent"
                     />
                 </div>
-                {this.state.tournaments.length > 0 && this.state.showDropdown && 
-                    <SearchDropDown 
-                        tournaments={this.state.tournaments}
-                        closeDropdown={this.closeDropDown}
-                    />
-                }
             </div>
             
         )

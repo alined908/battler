@@ -4,6 +4,7 @@ from django.contrib.sessions.models import Session
 from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
 
+
 class TournamentSimpleSerializer(serializers.ModelSerializer):
     tags = TagListSerializerField(required=False)
 

@@ -9,13 +9,16 @@ interface BattleProps{
 class Battle extends Component<BattleProps> {
     render() {
         return (
-            <div className="battle my-4">
-                {this.props.battle.entries.map((entry) => 
-                    <div className="rounded overflow-hidden shadow-md w-16 h-16">
-                        <img src={entry.photo} className="w-16 object-cover h-16"/>
-                    </div>
-                )}
+            <div className="battlewrapper">
+                <div className="battle my-4 px-6">
+                    {this.props.battle.entries.map((entry) => 
+                        <div className="rounded overflow-hidden shadow-md w-16 h-16">
+                            <img src={entry.photo} className="w-16 object-cover h-16"/>
+                        </div>
+                    )}
+                </div>
             </div>
+            
         )
     }
 }

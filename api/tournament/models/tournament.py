@@ -32,6 +32,7 @@ class Tournament(Timestamps):
     title = models.CharField(max_length=255)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     password = models.CharField(max_length=32, null=True, blank=True)
+    num_plays = models.IntegerField(default=0)
     privacy = models.IntegerField(choices=TournamentPrivacy.choices(), default=TournamentPrivacy.PUBLIC)
     is_nsfw = models.BooleanField()
     tags = TaggableManager(blank=True)
@@ -40,6 +41,9 @@ class Tournament(Timestamps):
 
 class TournamentEntry(Timestamps):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    num_battles = models.IntegerField(default=0)
+    num_battlewins = models.IntegerField(default=0)
+    num_gamewins = models.IntegerField(default=0)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     photo = models.FileField(upload_to=tournament_photo_directory)
@@ -62,6 +66,8 @@ class Game(Timestamps):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.curr_round = self.bracket_size
+            self.tournament.num_plays += 1
+            self.tournament.save()
 
         if self.curr_battle == self.curr_round // self.battle_size:
             self.advance_round()
@@ -147,6 +153,13 @@ def advance_game(sender, instance, created, **kwargs):
 
         instance.round.game.save()
 
+        for entry in instance.entries.all():
+            entry.num_battles += 1
+            
+            if entry == instance.winner:
+                entry.num_battlewins += 1
+            entry.save()
+
 @receiver(post_save, sender=Game)
 def assign_entities(sender, instance, created, **kwargs):
     if created:
@@ -156,6 +169,10 @@ def assign_entities(sender, instance, created, **kwargs):
         instance.entries.set(selected_entries)
         start_round = Round.objects.create(game=instance, round_num=instance.bracket_size)
         start_round.generate_battles()
+    else:
+        if instance.winner:
+            instance.winner.num_gamewins += 1
+            instance.winner.save()
 
 @receiver(post_delete, sender=TournamentEntry)
 def remove_file_from_s3(sender, instance, **kwargs):

@@ -24,6 +24,7 @@ export interface Game {
     winner: TournamentEntry | null,
     battles: Battle[],
     bracket?: Round[], 
+    battle_size: number,
     curr_battle: number,
     created_at: string,
     updated_at: string

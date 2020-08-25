@@ -35,7 +35,6 @@ Todo
 - [] List past games
 
 - [] tournament bracket
-- [] Fix Search Bar
 - [] Create Home Page
 
 - [] Deploy

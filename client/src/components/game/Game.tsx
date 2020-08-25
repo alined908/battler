@@ -3,6 +3,60 @@ import {axiosClient} from '../../tools/axiosClient'
 import {Battle, GameStart, GameEnd} from '../components'
 import {Game as GameType, Tournament as TournamentType} from '../../interfaces'
 import {RouteComponentProps} from 'react-router-dom'
+import GameWebSocket from '../../tools/GameWebSocket'
+
+interface OverlayProps {
+    game: GameType
+}
+
+interface OverlayState {
+    socket: GameWebSocket
+    scores: number[]
+    chat: any[]
+}
+
+class GameTwitchOverlay extends Component<OverlayProps, OverlayState> {
+
+    state : OverlayState = {
+        socket: new GameWebSocket(this.props.game),
+        scores: new Array(this.props.game.battle_size).fill(0),
+        chat: []
+    }
+
+    componentDidMount () : void {
+        const gameSocket = this.state.socket
+        gameSocket.addCallbacks(this.updateScores, this.updateChat)
+        const socketPath = `wss://irc-ws.chat.twitch.tv:443`
+        gameSocket.connect(socketPath)
+    }
+
+    componentWillUnmount () : void {
+        if (this.state.socket) {
+            this.state.socket.disconnect()
+        }
+    }
+
+    updateScores = (scores : number[]) => {
+        this.setState({scores})
+    }
+
+    updateChat = (message : {}) => {
+        this.setState({chat: [...this.state.chat, message]})
+    }
+
+    render () {
+        return (
+            <div>
+                <div>
+                    Scores - {JSON.stringify(this.state.scores)}
+                </div>
+                <div>
+                    Chat - {JSON.stringify(this.state.chat)}
+                </div>
+            </div>
+        )
+    }
+}
 
 type TParams = {
     id: string
@@ -110,6 +164,11 @@ class Game extends Component<GameProps, GameState> {
                 {inGame && this.state.game!.winner && 
                     <GameEnd
                         tournament={this.state.tournament!}
+                        game={this.state.game!}
+                    />
+                }
+                {inGame && 
+                    <GameTwitchOverlay
                         game={this.state.game!}
                     />
                 }

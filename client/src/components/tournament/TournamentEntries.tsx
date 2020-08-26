@@ -11,6 +11,7 @@ enum EntriesDisplay {
 
 interface TournamentEntriesProps {
     tournament: TournamentType
+    updateTournament: (tournament: TournamentType) => void
 }
 
 interface TournamentEntriesState {
@@ -109,7 +110,8 @@ class TournamentEntries extends Component<TournamentEntriesProps, TournamentEntr
     }
 
     updateEntities = (entries: TournamentEntryType[]) => {
-        this.setState({tournament: {...this.state.tournament, entries: [...entries, ...this.state.tournament.entries]}})
+        const newTournament = {...this.state.tournament, entries: [...entries, ...this.state.tournament.entries]}
+        this.setState({tournament: newTournament}, () => this.props.updateTournament(newTournament))
     }
 
     render() {

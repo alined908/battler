@@ -2,15 +2,15 @@ import React, {Component} from 'react'
 import {TournamentEntry as TournamentEntryType} from '../../interfaces'
 
 interface BattleEntryProps {
-    entry: TournamentEntryType,
+    entry: TournamentEntryType
     determineBattleWinner?: (entry: TournamentEntryType) => void
 }
 
 class BattleEntry extends Component<BattleEntryProps> {
     render () {
-
         return (
-            <div onClick={() => this.props.determineBattleWinner && this.props.determineBattleWinner(this.props.entry)} className="w-64 mx-2 cursor-pointer max-w-xs rounded-lg overflow-hidden border my-2 bg-white hover:shadow-xl">
+
+            <div onClick={() => this.props.determineBattleWinner && this.props.determineBattleWinner(this.props.entry)} className="w-64 mx-2 cursor-pointer max-w-xs rounded-lg shadow-md overflow-hidden my-2 bg-white hover:shadow-xl">
                 <div className='rounded overflow-hidden'>
                     <img className="w-64 object-cover h-64" src={this.props.entry.photo}/>
                 </div>

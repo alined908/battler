@@ -56,7 +56,7 @@ class GameEnd extends Component<GameEndProps, GameEndState> {
             <div className="flex flex-grow justify-center flex-col py-16 px-5 h-full bg-gray-100 max-w-screen-lg mx-auto w-full">
                 <div className="container rounded mx-auto -mt-32">
                     <div id='canvas' className="flex flex-col justify-center items-center">
-                        <Confetti numberOfPieces={300} gravity={0.05} recycle={false}/>
+                        <Confetti height={window.innerHeight - 63} numberOfPieces={300} gravity={0.05} recycle={false}/>
                         <div className="flex flex-col items-center">
                             <div className="text-4xl font-bold mb-8">
                                 {this.props.game.winner!.title} wins!

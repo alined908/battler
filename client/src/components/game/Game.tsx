@@ -1,62 +1,18 @@
 import React, {Component} from 'react'
 import {axiosClient} from '../../tools/axiosClient'
-import {Battle, GameStart, GameEnd} from '../components'
+import {Battle, GameStart, GameEnd, GameTwitchOverlay as TwitchOverlay} from '../components'
 import {Game as GameType, Tournament as TournamentType} from '../../interfaces'
 import {RouteComponentProps} from 'react-router-dom'
-import GameWebSocket from '../../tools/GameWebSocket'
+import {CircularProgress} from '@material-ui/core'
+import Slide from '@material-ui/core/Slide';
 
-interface OverlayProps {
-    game: GameType
-}
-
-interface OverlayState {
-    socket: GameWebSocket
-    scores: number[]
-    chat: any[]
-}
-
-class GameTwitchOverlay extends Component<OverlayProps, OverlayState> {
-
-    state : OverlayState = {
-        socket: new GameWebSocket(this.props.game),
-        scores: new Array(this.props.game.battle_size).fill(0),
-        chat: []
-    }
-
-    componentDidMount () : void {
-        const gameSocket = this.state.socket
-        gameSocket.addCallbacks(this.updateScores, this.updateChat)
-        const socketPath = `wss://irc-ws.chat.twitch.tv:443`
-        gameSocket.connect(socketPath)
-    }
-
-    componentWillUnmount () : void {
-        if (this.state.socket) {
-            this.state.socket.disconnect()
-        }
-    }
-
-    updateScores = (scores : number[]) => {
-        this.setState({scores})
-    }
-
-    updateChat = (message : {}) => {
-        this.setState({chat: [...this.state.chat, message]})
-    }
-
-    render () {
-        return (
-            <div>
-                <div>
-                    Scores - {JSON.stringify(this.state.scores)}
-                </div>
-                <div>
-                    Chat - {JSON.stringify(this.state.chat)}
-                </div>
-            </div>
-        )
-    }
-}
+enum GameState {
+    GAME_LOAD,
+    GAME_START,
+    GAME_IN_BATTLE,
+    GAME_BETWEEN_BATTLE,
+    GAME_END
+} 
 
 type TParams = {
     id: string
@@ -64,21 +20,24 @@ type TParams = {
 
 interface GameProps extends RouteComponentProps<TParams>{}
 
-interface GameState {
-    game: GameType | null,
-    promptGameStart: boolean,
+interface State {
+    game: GameType | null
+    gameState: GameState
     tournament: TournamentType | null
+    visibleOverlay: boolean
 }
 
-class Game extends Component<GameProps, GameState> {
+class Game extends Component<GameProps, State> {
 
-    state : GameState = {
+    state : State = {
         game: null,
         tournament: null,
-        promptGameStart: false
+        gameState: GameState.GAME_LOAD,
+        visibleOverlay: true
     }
 
     componentDidMount () : void {
+        setTimeout(() => console.log('hello'), 20000)
 
         axiosClient.request({
             url: `api/tournaments/${this.props.match.params.id}/`,
@@ -102,11 +61,12 @@ class Game extends Component<GameProps, GameState> {
         }).then((response) => {
             console.log(response.data)
             this.setState({
-                game: response.data
+                game: response.data,
+                gameState: response.data.winner ? GameState.GAME_END : GameState.GAME_IN_BATTLE
             })
         }).catch((error) => {
             this.setState({
-                promptGameStart: true
+                gameState: GameState.GAME_START
             })
         })
     }
@@ -116,16 +76,19 @@ class Game extends Component<GameProps, GameState> {
     }
 
     startNewGame = (game: GameType) => {
-        this.setState({game, promptGameStart: false})
+        this.setState({game, gameState: GameState.GAME_IN_BATTLE})
     }
 
     advanceNextBattle = () => {
+        this.setState({gameState: GameState.GAME_BETWEEN_BATTLE})
+        
         if (this.state.game!.battles.length > 1) {
             this.setState({
                 game: {
                     ...this.state.game!, 
                     battles: [...this.state.game!.battles.slice(1)]
-                }
+                },
+                gameState: GameState.GAME_IN_BATTLE
             })
         } else {
             axiosClient.request({
@@ -134,7 +97,8 @@ class Game extends Component<GameProps, GameState> {
             }).then((response) => {
                 console.log(response.data)
                 this.setState({
-                    game: response.data
+                    game: response.data,
+                    gameState: response.data.winner ? GameState.GAME_END : GameState.GAME_IN_BATTLE
                 })
             }).catch((error) => {
                 console.log(error)
@@ -142,36 +106,61 @@ class Game extends Component<GameProps, GameState> {
         }
     }
 
+    handleVisibility = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({visibleOverlay: !this.state.visibleOverlay})
+    }
+
+    getGameComponent = () => {
+        switch (this.state.gameState){
+            case (GameState.GAME_LOAD):
+                return <div className="flex flex-grow items-center justify-center">
+                </div>
+            case (GameState.GAME_START):
+                return <GameStart
+                            tournament={this.state.tournament!}
+                            closeGameStart={this.closeGameStart}
+                            startNewGame={this.startNewGame}
+                        />
+            case (GameState.GAME_IN_BATTLE):
+                return <Battle 
+                            advanceNextBattle={this.advanceNextBattle}
+                            battle={this.state.game!.battles[0]}
+                            tournamentID={this.props.match.params.id}
+                        />
+                        
+            case (GameState.GAME_BETWEEN_BATTLE):
+                return <div className="flex flex-grow items-center justify-center">
+                </div>
+            case (GameState.GAME_END):
+                return <GameEnd
+                            tournament={this.state.tournament!}
+                            game={this.state.game!}
+                        />
+        }
+    }
+
     render () {
-        const inGame = !this.state.promptGameStart && this.state.game
-        
+        const showOverlay = this.state.gameState === GameState.GAME_IN_BATTLE || this.state.gameState === GameState.GAME_BETWEEN_BATTLE
+
         return (
-            <div className="flex flex-col flex-grow items-center">
-                {this.state.promptGameStart && this.state.tournament && 
-                    <GameStart
-                        tournament={this.state.tournament}
-                        closeGameStart={this.closeGameStart}
-                        startNewGame={this.startNewGame}
-                    />
-                }
-                {inGame && this.state.game!.battles.length > 0 &&
-                    <Battle 
-                        advanceNextBattle={this.advanceNextBattle}
-                        battle={this.state.game!.battles[0]}
-                        tournamentID={this.props.match.params.id}
-                    />
-                }
-                {inGame && this.state.game!.winner && 
-                    <GameEnd
-                        tournament={this.state.tournament!}
-                        game={this.state.game!}
-                    />
-                }
-                {inGame && 
-                    <GameTwitchOverlay
-                        game={this.state.game!}
-                    />
-                }
+            <div className="relative flex flex-col flex-grow items-center">
+                <div className="ml-4 flex mt-6 flex-col absolute left-0 w-56">
+                    
+                    {showOverlay &&
+                        <>
+                            <label className="inline-flex items-center my-3 ml-4 cursor-pointer">
+                                <input onChange={this.handleVisibility} checked={this.state.visibleOverlay} type="checkbox" className="form-checkbox shadow"/>
+                                <span className="ml-2 text-sm font-semibold">Show Chat Scores</span>
+                            </label>
+                            <TwitchOverlay
+                                visible={this.state.visibleOverlay}
+                                gameState={this.state.gameState}
+                                game={this.state.game!}
+                            />
+                        </>
+                    }
+                </div>
+                {this.getGameComponent()}
             </div>
         )
     }

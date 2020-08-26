@@ -17,6 +17,7 @@ import Game from './game/Game'
 import GameStart from './game/GameStart'
 import GameEnd from './game/GameEnd'
 import GameBracket from './game/GameBracket'
+import GameTwitchOverlay from './game/GameTwitchOverlay'
 
 export {
     RouterWrapper,
@@ -37,5 +38,6 @@ export {
     Game,
     GameStart,
     GameEnd,
+    GameTwitchOverlay,
     GameBracket
 };

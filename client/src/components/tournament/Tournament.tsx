@@ -86,7 +86,7 @@ class Tournament extends Component<TournamentProps, TournamentState> {
                                     {this.state.tournament.title}
                                     <div className="text-xs">
                                         {this.state.tournament.tags.map((tag) => 
-                                            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 font-semibold text-gray-700 mr-2">
+                                            <span className="inline-block bg-white bg-gray-200 rounded-full px-3 py-1 font-semibold mr-2">
                                                 #{tag}
                                             </span>
                                         )}
@@ -133,6 +133,7 @@ class Tournament extends Component<TournamentProps, TournamentState> {
                 <hr className="my-6"/>
                 <TournamentEntries
                     tournament={this.state.tournament}
+                    updateTournament={this.updateTournament}
                 />
                 <TournamentEditForm
                     toggleForm={this.toggleEditForm}

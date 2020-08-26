@@ -10,6 +10,8 @@
     "@types/lodash": "^4.14.159",
     "@types/react": "^16.9.46",
     "@types/react-router-dom": "^5.1.5",
+    "@types/react-transition-group": "^4.4.0",
+    "apexcharts": "^3.20.0",
     "axios": "^0.19.2",
     "lodash": "^4.17.20",
     "moment": "^2.27.0",
@@ -18,9 +20,11 @@
     "react-confetti": "^6.0.0",
     "react-dom": "^16.13.1",
     "react-dropzone": "^11.0.3",
+    "react-flip-move": "^3.0.4",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.2",
+    "react-transition-group": "^4.4.1",
     "redux": "^4.0.5",
     "tailwindcss": "^1.6.2",
     "typescript": "^3.9.7"
@@ -50,6 +54,7 @@
     ]
   },
   "devDependencies": {
+    "@tailwindcss/custom-forms": "^0.2.1",
     "redux-devtools": "^3.6.1"
   }
 }

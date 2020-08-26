@@ -36,7 +36,7 @@ class TournamentCard extends Component<Props> {
                         </p>
                         <div className="mt-4">
                             {tournament.tags.map((tag, i) => 
-                                <span key={i} className="inline-block shadow bg-gray-100 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2">
+                                <span key={i} className="inline-block shadow-sm bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2">
                                     #{tag}
                                 </span>
                             )}

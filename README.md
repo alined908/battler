@@ -29,9 +29,9 @@ Todo
 - [x] Battle Design/Transition
 - [x] Tournament stats
 - [x] Tournaments Page (tags)
+- [x] Twitch Chatbot
 
 - [] User accounts
-- [] Twitch Chatbot
 - [] List past games
 
 - [] tournament bracket

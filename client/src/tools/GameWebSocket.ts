@@ -1,23 +1,21 @@
 
-import {Game as GameType} from '../interfaces'
 import GameTracker from './GameTracker'
+import {Game as GameType} from '../interfaces/index'
 
 class GameWebSocket {
     socket: WebSocket | null
-    game: GameType
     tracker: GameTracker
     updateChat!: (data: {}) => void
     updateScores!: (data: number[]) => void
     
     constructor(game: GameType) {
-        this.game = game
         this.tracker = new GameTracker(game)
         this.socket = null
     }
 
-    connect = (path: string) => {
+    connect = () => {
         
-        const fullPath = this.handleURL(path)
+        const fullPath = this.handleURL('wss://irc-ws.chat.twitch.tv:443')
         this.socket = new WebSocket(fullPath)
 
         this.socket.onmessage = (e) => {
@@ -49,6 +47,11 @@ class GameWebSocket {
 
     receiveServerMessage = (data: any) => {
         console.log(data)
+
+        if (data === 'PING :tmi.twitch.tv'){
+            this.socket?.send('PONG :tmi.twitch.tv')
+        }
+
         const regex = ':(.*)\!.*@.*\.tmi\.twitch\.tv PRIVMSG #(.*) :(.*)'
         let match = data.match(regex)
         if (match) {

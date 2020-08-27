@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Game as GameType} from '../../interfaces'
 import GameWebSocket from '../../tools/GameWebSocket'
-import Grow from '@material-ui/core/Grow';
+import Slide from '@material-ui/core/Slide';
 import { sum } from 'lodash'
 import FlipMove from 'react-flip-move';
 
@@ -49,29 +49,28 @@ class GameChart extends Component<ChartProps, ChartState>{
 
         return (
             <div className='mt-4'>
-                
-                    <FlipMove>
-                        {sortedIndex.map((i, index) => {
-                            const entry = battle.entries[i]
-                            return (
-                                <Grow key={i} in={true} timeout={(index + 1) * 500}>
-                                    <div className="flex items-center mb-4">
-                                        <div className='rounded overflow-hidden w-12 h-12 shadow'>
-                                            <img className="w-12 object-cover h-12" src={entry.photo} alt={entry.title}/>
-                                        </div>
-                                        <div className="ml-8 flex text-sm items-center">
-                                            <span className="font-semibold text-sm">
-                                                {this.props.scores[i]}
-                                            </span>
-                                            <span className="ml-1 text-gray-700 text-xs" style={{marginTop: '.125rem'}}>
-                                                ({`${this.determinePercentage(i, this.props.scores)}%`})
-                                            </span>
-                                        </div>
+                <FlipMove>
+                    {sortedIndex.map((i, index) => {
+                        const entry = battle.entries[i]
+                        return (
+                            <Slide key={i} in={true} direction={'right'} timeout={(index + 1) * 200}>
+                                <div className="flex items-center mb-4">
+                                    <div className='rounded overflow-hidden w-12 h-12 shadow'>
+                                        <img className="w-12 object-cover h-12" src={entry.photo} alt={entry.title}/>
                                     </div>
-                                </Grow>
-                            )
-                        })}
-                    </FlipMove>
+                                    <div className="ml-8 flex text-sm items-center">
+                                        <span className="font-semibold text-sm">
+                                            {this.props.scores[i]}
+                                        </span>
+                                        <span className="ml-1 text-gray-700 text-xs" style={{marginTop: '.125rem'}}>
+                                            ({`${this.determinePercentage(i, this.props.scores)}%`})
+                                        </span>
+                                    </div>
+                                </div>
+                            </Slide>
+                        )
+                    })}
+                </FlipMove>
             </div>
         )
     }
@@ -89,6 +88,7 @@ interface OverlayProps {
     game: GameType
     gameState: GameState
     visible: boolean
+    showChat: boolean
 }
 
 interface OverlayState {
@@ -135,7 +135,7 @@ class GameTwitchOverlay extends Component<OverlayProps, OverlayState> {
     render () {
 
         return (
-            <div className={`${this.props.visible ? "": "hidden"} ml-4 mt-8`}>
+            <div className={`${this.props.visible ? "": "hidden"} ml-4 mt-6`}>
                 {this.props.gameState === GameState.GAME_IN_BATTLE && 
                     <>  
                         <div className="font-semibold text-sm">
@@ -144,6 +144,16 @@ class GameTwitchOverlay extends Component<OverlayProps, OverlayState> {
                         <GameChart game={this.props.game} scores={this.state.scores}/>
                     </>
                 }
+                <iframe
+                    className={`${this.props.showChat ? "": "hidden"} rounded mt-12 shadow-md`}
+                    title={`Twitch Chat`}
+                    src={"https://www.twitch.tv/embed/alinedow/chat?parent=localhost"}
+                    height={500}
+                    width={280}
+                    scrolling='no'
+                    frameBorder={0}
+                >
+                </iframe>
             </div>
         )
     }

@@ -25,6 +25,7 @@ interface State {
     gameState: GameState
     tournament: TournamentType | null
     visibleOverlay: boolean
+    showChat: boolean
 }
 
 class Game extends Component<GameProps, State> {
@@ -33,7 +34,8 @@ class Game extends Component<GameProps, State> {
         game: null,
         tournament: null,
         gameState: GameState.GAME_LOAD,
-        visibleOverlay: true
+        visibleOverlay: true,
+        showChat: false
     }
 
     componentDidMount () : void {
@@ -110,6 +112,10 @@ class Game extends Component<GameProps, State> {
         this.setState({visibleOverlay: !this.state.visibleOverlay})
     }
 
+    toggleChat = () => {
+        this.setState({showChat: !this.state.showChat})
+    }
+
     getGameComponent = () => {
         switch (this.state.gameState){
             case (GameState.GAME_LOAD):
@@ -148,14 +154,19 @@ class Game extends Component<GameProps, State> {
                     
                     {showOverlay &&
                         <>
-                            <label className="inline-flex items-center my-3 ml-4 cursor-pointer">
+                            <label className="inline-flex items-center my-2 ml-4 cursor-pointer">
                                 <input onChange={this.handleVisibility} checked={this.state.visibleOverlay} type="checkbox" className="form-checkbox shadow"/>
                                 <span className="ml-2 text-sm font-semibold">Show Chat Scores</span>
+                            </label>
+                            <label className="inline-flex items-center my-2 ml-4 cursor-pointer">
+                                <input onChange={this.toggleChat} checked={this.state.showChat} type="checkbox" className="form-checkbox shadow"/>
+                                <span className="ml-2 text-sm font-semibold">Show Chat </span>
                             </label>
                             <TwitchOverlay
                                 visible={this.state.visibleOverlay}
                                 gameState={this.state.gameState}
                                 game={this.state.game!}
+                                showChat={this.state.showChat}
                             />
                         </>
                     }

@@ -67,33 +67,6 @@
   box-shadow: none;
  }
 
-
- .battlewrapper {
-   position:relative;
-
-  &:after {
-    transition: width 0.2s linear;
-    position: absolute;
-    right: 0;
-    content: '';
-    display: block;
-    width: 1.5em;
-    top: 50%;
-    border-top: 2px solid #9e9e9e;
-    transform: translateY(-1px);
-  }
+ .chat-inputt{
+  display: none !important;
  }
- .page-enter {
-  transform: translate(100%);
-}
-.page-enter.page-enter-active {
-  transform: translate(0%);
-  transition: transform 1000ms ease-in-out;
-}
-.page-leave {
-  transform: translate(0%);
-}
-.page-leave.page-leave-active {
-  transform: translate(-100%);
-  transition: transform 1000ms ease-in-out;
-}

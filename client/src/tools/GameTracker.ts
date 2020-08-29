@@ -65,8 +65,6 @@ class GameTracker {
         }
 
         const score = parseInt(data.message)
-        console.log(this.responders)
-        console.log(this.respondedTracker)
         if (this.responders.has(data.username) && this.respondedTracker[data.username] != score){
             const oldScore = this.respondedTracker[data.username]
             this.scoreCount[oldScore] -= 1

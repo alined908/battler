@@ -4,7 +4,8 @@ import {TournamentCard, SearchBar} from '../components'
 import {axiosClient} from '../../tools/axiosClient'
 import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
-import moment, {Moment} from 'moment'
+import moment from 'moment'
+import Grow from '@material-ui/core/Grow'
 
 const dateFilter = {
     today: moment().format('YYYY-MM-DD'),
@@ -178,11 +179,15 @@ class Tournaments extends Component<TournamentsProps, TournamentsState> {
                         />
                     </div>
                     <div className="flex flex-wrap items-stretch">
-                        {this.state.tournaments.map((tournament) => 
-                            <TournamentCard
-                                key={tournament.id}
-                                tournament={tournament}
-                            />
+                        {this.state.tournaments.map((tournament, i) =>
+                            <Grow in={true} timeout={i * 400}>
+                                <div className='flex'>
+                                    <TournamentCard
+                                        key={tournament.id}
+                                        tournament={tournament}
+                                    />
+                                </div>
+                            </Grow> 
                         )}
                     </div>
                 </div>

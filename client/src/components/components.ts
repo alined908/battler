@@ -6,6 +6,10 @@ import SearchDropDown from './search/SearchDropDown'
 import SearchEntry from './search/SearchEntry'
 import Battle from './battle/Battle'
 import BattleEntry from './battle/BattleEntry'
+import LoginForm from './user/LoginForm'
+import SignupForm from './user/SignupForm'
+import Logout from './user/Logout'
+import MyTournaments from './tournament/MyTournaments'
 import Tournament from './tournament/Tournament'
 import Tournaments from './tournament/Tournaments'
 import TournamentCard from './tournament/TournamentCard'
@@ -18,16 +22,22 @@ import GameStart from './game/GameStart'
 import GameEnd from './game/GameEnd'
 import GameBracket from './game/GameBracket'
 import GameTwitchOverlay from './game/GameTwitchOverlay'
+import GamesList from './game/GamesList'
+import TwitchCallback from './user/TwitchCallback'
 
 export {
     RouterWrapper,
     Home,
+    LoginForm,
+    SignupForm,
+    Logout,
     SearchBar,
     SearchDropDown,
     SearchEntry,
     Navbar,
     Battle,
     BattleEntry,
+    MyTournaments,
     Tournament,
     TournamentEditForm,
     TournamentCard,
@@ -39,5 +49,7 @@ export {
     GameStart,
     GameEnd,
     GameTwitchOverlay,
-    GameBracket
+    GameBracket,
+    GamesList,
+    TwitchCallback
 };

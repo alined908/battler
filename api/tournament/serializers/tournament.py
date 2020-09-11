@@ -29,6 +29,7 @@ class GameSerializer(serializers.ModelSerializer):
     battles = serializers.SerializerMethodField('_get_battles')
     winner = serializers.SerializerMethodField('_get_winner')
     bracket = serializers.SerializerMethodField('_get_bracket')
+    tournament = serializers.SerializerMethodField('_get_tournament')
 
     def _get_battles(self, obj):
         battles = obj.current_battles()
@@ -43,9 +44,13 @@ class GameSerializer(serializers.ModelSerializer):
         rounds = obj.rounds.all()
         return RoundSerializer(rounds, many=True).data
 
+    def _get_tournament(self, obj):
+        tournament = obj.tournament
+        return TournamentSerializer(tournament).data
+
     class Meta:
         model = Game
-        fields = ('id', 'bracket_size', 'battle_size', 'tournament', 'winner', 'battles', 'bracket')
+        fields = ('id', 'bracket_size', 'curr_battle', 'battle_size', 'tournament', 'winner', 'battles', 'bracket', 'created_at', 'updated_at')
 
 class TournamentEntrySerializer(serializers.ModelSerializer):
     class Meta:

@@ -117,6 +117,16 @@ class TournamentEntryView(APIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class GamesView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        user_games = Game.objects.filter(player=user)
+        games = GameSerializer(user_games, many=True)
+
+        return Response(games.data, status=status.HTTP_200_OK)
+
 class GameView(APIView):
 
     permission_classes = [permissions.AllowAny]
@@ -142,12 +152,14 @@ class GameView(APIView):
         Request - Create new Game
         Response - Send Game object (with all first round battles)
         """
+        print(request.user)
         # Set session_id for this game
         if not request.session.exists(request.session.session_key):
             request.session.create()
         
         tournament = self.get_tournament(kwargs['url'])
         game = Game.objects.create(
+            player=request.user,
             bracket_size=int(request.data['bracket_size']), 
             battle_size=int(request.data['battle_size']), 
             session_id=request.session.session_key, 

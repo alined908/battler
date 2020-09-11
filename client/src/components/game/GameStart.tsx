@@ -46,6 +46,9 @@ class GameStart extends Component<GameStartProps, GameStartState> {
             data: {
                 bracket_size: this.state.bracketSize,
                 battle_size: this.state.battleSize
+            },
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('accessToken')}`
             }
         }).then((response) => {
             console.log(response.data)

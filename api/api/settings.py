@@ -63,7 +63,7 @@ AUTHENTICATION_BACKENDS = (
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("JWT", "Bearer"),
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
 }
 
@@ -144,6 +144,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+TWITCH_CLIENTID = os.environ.get("TWITCH_OAUTH_CLIENTID")
+TWITCH_CLIENTSECRET = os.environ.get("TWITCH_OAUTH_CLIENTSECRET")
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/

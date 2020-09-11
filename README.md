@@ -30,11 +30,13 @@ Todo
 - [x] Tournament stats
 - [x] Tournaments Page (tags)
 - [x] Twitch Chatbot
-
-- [] User accounts
-- [] List past games
+- [x] User accounts
+- [x] List past games/my tournaments
+- [x] alert when copeid to clipboard
 
 - [] tournament bracket
+- [] Fix entries bug
+- [] write comprehensive tests
+- [] Night mode
 - [] Create Home Page
-
 - [] Deploy

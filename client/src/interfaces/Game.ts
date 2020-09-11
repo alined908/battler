@@ -1,4 +1,4 @@
-import {TournamentEntry} from './index'
+import {TournamentEntry, Tournament} from './index'
 
 
 export interface Round {
@@ -18,7 +18,7 @@ export interface Battle {
 
 export interface Game {
     id: number,
-    tournament: string,
+    tournament: Tournament | string,
     bracket_size: number,
     curr_round: number,
     winner: TournamentEntry | null,

@@ -1,11 +1,17 @@
 from django.urls import path
 from . import views
+from rest_framework_simplejwt.views import TokenRefreshView
 
 app_name='tournament'
 
 urlpatterns = [
+    path('login/', views.LoginView.as_view()),
+    path('refresh_token/', TokenRefreshView.as_view()),
+    path('auth/twitch/', views.TwitchOAuthView.as_view()),
     path('users/', views.UserListView.as_view()),
-    path('users/<id>/', views.UserView.as_view()),
+    path('users/<username>/', views.UserView.as_view()),
+    path('users/<username>/tournaments/', views.UserTournamentsView.as_view()),
+    path('games/', views.GamesView.as_view()),
     path('search/tournaments/', views.SearchTournamentView.as_view()),
     path('tournaments/', views.TournamentListView.as_view()),
     path('tournaments/<url>/', views.TournamentView.as_view()),

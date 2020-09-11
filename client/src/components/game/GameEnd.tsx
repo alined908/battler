@@ -4,6 +4,7 @@ import {GameBracket} from '../components'
 import Confetti from 'react-confetti'
 import {withRouter, RouteComponentProps} from 'react-router-dom'
 import {axiosClient} from '../../tools/axiosClient'
+import {Snackbar} from '@material-ui/core'
 
 type TParams = {
     id: string
@@ -16,12 +17,14 @@ interface GameEndProps extends RouteComponentProps<TParams> {
 
 interface GameEndState {
     showBracket: boolean
+    showCopied: boolean
 }
 
 class GameEnd extends Component<GameEndProps, GameEndState> {
 
     state : GameEndState = {
-        showBracket: false
+        showBracket: false,
+        showCopied: false
     }
 
     getClipboardText = () => {
@@ -48,6 +51,16 @@ class GameEnd extends Component<GameEndProps, GameEndState> {
     toggleBracket = () => {
         this.setState({showBracket: !this.state.showBracket})
     }
+
+    toggleCopied = () => {
+        this.setState({showCopied: !this.state.showCopied})
+    }
+
+    handleShare = () => {
+        this.toggleCopied()
+        const clipboardText = this.getClipboardText()
+        navigator.clipboard.writeText(clipboardText)
+    }
     
     render () {
    
@@ -65,12 +78,27 @@ class GameEnd extends Component<GameEndProps, GameEndState> {
                                 <img src={this.props.game.winner!.photo} className="w-64 object-cover h-64"/>
                             </div>
                             <div className="flex justify-between mt-8">
-                                <button onClick={() => {navigator.clipboard.writeText(this.getClipboardText())}} className="mr-2 flex items-center bg-white hover:bg-gray-100 text-blue-500 text-sm font-semibold py-2 px-3 shadow rounded ml-4">
+                                <button onClick={this.handleShare} className="mr-2 flex items-center bg-white hover:bg-gray-100 text-blue-500 text-sm font-semibold py-2 px-3 shadow rounded ml-4">
                                     Share
                                 </button>
+                                <Snackbar
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'right'
+                                    }}
+                                    message={
+                                        <div>
+                                            Link copied to clipboard
+                                        </div>
+                                    }
+                                    open={this.state.showCopied}
+                                    autoHideDuration={3000}
+                                    onClose={this.toggleCopied}
+                                />
                                 <button onClick={this.toggleBracket} className="mr-2 flex items-center bg-white hover:bg-gray-100 text-blue-500 text-sm font-semibold py-2 px-3 shadow rounded ml-4">
                                     Bracket
                                 </button>
+                                
                                 <input id='clipboard' className="hidden bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" type="text" value={`http://localhost:8003/tournaments/${this.props.match.params.id}/`}/>
                                 <button onClick={this.restartGame} className="mr-2 flex items-center bg-white hover:bg-gray-100 text-green-500 text-sm font-semibold py-2 px-3 shadow rounded ml-4">
                                     Restart

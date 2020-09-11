@@ -3,9 +3,7 @@ import {axiosClient} from '../../tools/axiosClient'
 import {Battle, GameStart, GameEnd, GameTwitchOverlay as TwitchOverlay} from '../components'
 import {Game as GameType, Tournament as TournamentType} from '../../interfaces'
 import {RouteComponentProps} from 'react-router-dom'
-import {CircularProgress} from '@material-ui/core'
-import Slide from '@material-ui/core/Slide';
-
+    
 enum GameState {
     GAME_LOAD,
     GAME_START,
